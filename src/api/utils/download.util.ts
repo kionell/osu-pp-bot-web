@@ -51,9 +51,12 @@ export class DownloadUtils {
     const targetBeatmap = await this.getTargetBeatmapOrFail(options);
 
     const downloadOptions: IDownloadEntryOptions = {
-      customName: options.hash,
       type: DownloadType.Beatmap,
     };
+
+    if (typeof options.hash === 'string') {
+      downloadOptions.customName = options.hash;
+    }
 
     if (typeof targetBeatmap === 'number') {
       downloadOptions.id = targetBeatmap;
