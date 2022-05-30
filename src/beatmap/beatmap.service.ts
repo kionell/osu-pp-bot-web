@@ -30,6 +30,8 @@ export class BeatmapService {
      */
     const result = await this.downloadUtils.downloadBeatmap(options);
 
+    console.log(`Beatmap (${result.id || result.url}) download with status: "${result.statusText}"`);
+
     if (typeof options.hash !== 'string') {
       options.hash = result.md5 as string;
     }
