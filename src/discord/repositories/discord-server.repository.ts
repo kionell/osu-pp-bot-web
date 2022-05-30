@@ -20,7 +20,7 @@ export class DiscordServerRepository {
       id: serverDto.id.toString(),
     };
 
-    if (typeof serverDto.prefix === 'string') {
+    if (typeof serverDto.prefix === 'string' || serverDto.prefix === null) {
       data.prefix = serverDto.prefix;
     }
 

@@ -6,8 +6,8 @@ export class DiscordServer {
   @Prop({ required: true })
     id: string;
 
-  @Prop({ default: null })
-    prefix: string;
+  @Prop({ type: String || null, default: null })
+    prefix: string | null;
 }
 
 export const DiscordServerSchema = SchemaFactory.createForClass(DiscordServer);
