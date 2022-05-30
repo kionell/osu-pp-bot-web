@@ -128,7 +128,10 @@ export class DownloadUtils {
 
     options.beatmapId ??= beatmapInfo.id;
     options.rulesetId ??= beatmapInfo.rulesetId;
-    options.hash ??= beatmapInfo.md5;
+
+    if (!options.hash && beatmapInfo.md5) {
+      options.hash = beatmapInfo.md5;
+    }
 
     return options.beatmapId;
   }
