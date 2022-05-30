@@ -9,6 +9,7 @@
 !LICENSE
 !package-lock.json
 !package.json
+!Procfile
 !README.md
 !rollup.config.js
 !jest.config.js
