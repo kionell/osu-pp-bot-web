@@ -54,15 +54,15 @@ export class DownloadUtils {
       type: DownloadType.Beatmap,
     };
 
-    if (typeof options.hash === 'string') {
+    if (typeof options.hash === 'string' && options.hash) {
       downloadOptions.customName = options.hash;
     }
 
-    if (typeof targetBeatmap === 'number') {
+    if (typeof targetBeatmap === 'number' && targetBeatmap) {
       downloadOptions.id = targetBeatmap;
     }
 
-    if (typeof targetBeatmap === 'string') {
+    if (typeof targetBeatmap === 'string' && targetBeatmap) {
       downloadOptions.url = targetBeatmap;
     }
 
