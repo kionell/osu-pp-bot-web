@@ -7,38 +7,11 @@ import { BeatmapOptionsDto } from '../../beatmap/dto/beatmap-options.dto';
 import { ScoreOptionsDto } from '../../score/dto/score-options.dto';
 
 /**
- * Mapping for file paths to not calculate MD5 hash everytime.
- */
-export class MD5Cache extends Map<string, string> {
-  /**
-   * Adds a new element to the cache. Removes it after a certain time if needed.
-   * @param filePath The key that will be used to identify this response.
-   * @param hash The response value.
-   * @returns Reference to this cache.
-   */
-  set(filePath: string, hash: string): this {
-    super.set(filePath, hash);
-
-    /**
-     * Delete MD5 hash after 1 hour.
-     */
-    setTimeout(() => super.delete(filePath), 3600000);
-
-    return this;
-  }
-}
-
-/**
  * Downloading utils.
  */
 @Injectable()
 export class DownloadUtils {
   constructor(private apiService: ApiService) {}
-
-  /**
-   * Mapping for file paths to not calculate MD5 hash everytime.
-   */
-  private cache = new MD5Cache();
 
   /**
    * Tries to download beatmap file.
