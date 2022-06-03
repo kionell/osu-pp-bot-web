@@ -16,3 +16,4 @@
 !nest-cli.json
 !tsconfig.json
 !tsconfig.build.json
+!template.env
