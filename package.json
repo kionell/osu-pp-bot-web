@@ -36,7 +36,7 @@
     "hbs": "^4.2.0",
     "moment": "^2.29.3",
     "mongoose": "^6.3.4",
-    "osu-classes": "^0.7.0",
+    "osu-classes": "^0.8.0",
     "osu-downloader": "^0.6.3",
     "piscina": "^3.2.0",
     "skia-canvas": "^0.9.29",
