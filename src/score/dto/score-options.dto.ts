@@ -83,4 +83,9 @@ export class ScoreOptionsDto {
    * Target percent of max combo of a score.
    */
   percentCombo?: number;
+
+  /**
+   * Should this score be fixed to FC?
+   */
+  fix?: boolean;
 }

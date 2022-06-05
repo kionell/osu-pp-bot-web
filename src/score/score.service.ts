@@ -53,9 +53,9 @@ export class ScoreService {
      * We need to remove replay if we are trying to simulate score.
      * Replay has higher priority over custom counts so it will overwrite options. 
      */
-    if (simulate) delete scoreOptions.replayURL;
+    if (simulate || options.fix) delete scoreOptions.replayURL;
 
-    const calculated = simulate
+    const calculated = simulate || options.fix
       ? await this.calculatorService.simulateScore(scoreOptions)
       : await this.calculatorService.calculateScore(scoreOptions);
 
