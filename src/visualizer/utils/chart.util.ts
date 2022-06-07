@@ -31,10 +31,10 @@ export function msToTime(ms: number): string {
  * @param maxChunks Max possible points on the chart.
  * @returns Decimated strains.
  */
-export function decimateStrains(strains: number[], maxChunks = 600): ScatterDataPoint[] {
+export function decimateStrains(strains: number[], maxChunks = 300): ScatterDataPoint[] {
   /**
- * Single strain step is 400 ms by default.
- */
+   * Single strain step is 400 ms by default.
+   */
   const STRAIN_STEP = 400;
 
   const chunkSize = Math.ceil(strains.length / maxChunks);
