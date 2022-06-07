@@ -58,6 +58,31 @@ export class DownloadUtils {
   }
 
   /**
+   * If hash is present in beatmap options then returns it.
+   * Otherwise parses replay file to get beatmap MD5.
+   * @param options Beatmap options.
+   * @throws If replay file failed to downlaod.
+   * @returns Beatmap MD5 hash or null.
+   */
+  async getBeatmapMD5OrNull(options: BeatmapOptionsDto): Promise<string | null> {
+    const { hash, replayURL } = options;
+
+    if (typeof hash === 'string') return hash;
+    if (typeof replayURL !== 'string') return null;
+
+    const score = await parseScore({
+      savePath: process.env.CACHE_PATH,
+      replayURL,
+    });
+
+    const scoreInfo = score.data.info;
+
+    options.mods = scoreInfo.rawMods;
+
+    return scoreInfo.beatmapHashMD5;
+  }
+
+  /**
    * Tries to get beatmap ID or file URL from options.
    * If there are no ID or URL, try to search beatmap via server API. 
    * @param options Beatmap options.
@@ -95,9 +120,7 @@ export class DownloadUtils {
 
     const beatmapInfo = await this.apiService.getBeatmap(server, requestOptions);
 
-    if (!beatmapInfo?.id) {
-      throw new InternalServerErrorException('Beatmap not found!');
-    }
+    if (!beatmapInfo?.id) return 0;
 
     options.beatmapId ??= beatmapInfo.id;
     options.rulesetId ??= beatmapInfo.rulesetId;
@@ -107,30 +130,5 @@ export class DownloadUtils {
     }
 
     return options.beatmapId;
-  }
-
-  /**
-   * If hash is present in beatmap options then returns it.
-   * Otherwise parses replay file to get beatmap MD5.
-   * @param options Beatmap options.
-   * @throws If replay file failed to downlaod.
-   * @returns Beatmap MD5 hash or null.
-   */
-  private async getBeatmapMD5OrNull(options: BeatmapOptionsDto): Promise<string | null> {
-    const { hash, replayURL } = options;
-
-    if (typeof hash === 'string') return hash;
-    if (typeof replayURL !== 'string') return null;
-
-    const score = await parseScore({
-      savePath: process.env.CACHE_PATH,
-      replayURL,
-    });
-
-    const scoreInfo = score.data.info;
-
-    options.mods = scoreInfo.rawMods;
-
-    return scoreInfo.beatmapHashMD5;
   }
 }

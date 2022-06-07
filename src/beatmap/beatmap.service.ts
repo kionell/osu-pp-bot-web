@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { IBeatmapResponse } from './interfaces/beatmap-response.interface';
 import { BeatmapOptionsDto } from './dto/beatmap-options.dto';
 import { BeatmapRepository } from './repositories/beatmap.repository';
@@ -22,6 +22,12 @@ export class BeatmapService {
    * @returns Beatmap response.
    */
   async processByDefault(options: BeatmapOptionsDto, compact = false): Promise<IBeatmapResponse> {
+    if (!options.beatmapId && !options.fileURL && !options.hash && options.replayURL) {
+      const hash = await this.downloadUtils.getBeatmapMD5OrNull(options);
+
+      if (hash) options.hash = hash;
+    }
+
     /**
      * We need to download all files in main thread 
      * because downloader relies on static cache of processed URLs.
@@ -48,6 +54,10 @@ export class BeatmapService {
 
     const filter = this.beatmapRepository.getFilter(options);
     const cached = await this.beatmapRepository.findOne(filter, compact);
+
+    if (!cached && !options.beatmapId && !options.fileURL) {
+      throw new InternalServerErrorException('Beatmap not found!');
+    }
 
     return cached ?? await this.createAndSaveBeatmap(options);
   }
