@@ -36,6 +36,16 @@ export class VisualizerService {
 
     if (!skills) return null;
 
+    const colors = this.colorUtils.getColorsForRuleset(rulesetId);
+
+    /**
+     * Remove second aim skill if it's osu!standard ruleset.
+     */
+    if (rulesetId === GameMode.Osu && skills[1]?.title.startsWith('Aim')) {
+      skills.splice(1, 1);
+      colors.splice(1, 1);
+    }
+
     const maxPoints = skills.reduce((max, skill) => {
       return Math.max(max, skill.strainPeaks.length);
     }, 0);
@@ -56,8 +66,6 @@ export class VisualizerService {
     }, 0);
 
     const datasets = decimated.map((skill, i) => {
-      const colors = this.colorUtils.getColorsForRuleset(rulesetId);
-
       return getStrainChartDataset(skill, colors[i]);
     });
 
