@@ -1,8 +1,8 @@
 import { GameMode } from '@kionell/osu-pp-calculator';
 
 export class ColorUtils {
-  private readonly lineOpacity = 0.7;
-  private readonly fillOpacity = 0.2;
+  private readonly lineOpacity = 0.75;
+  private readonly fillOpacity = 0.25;
 
   /**
    * Basic chart line colors.
