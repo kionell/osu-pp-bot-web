@@ -42,8 +42,14 @@ export class VisualizerService {
      * Remove second aim skill if it's osu!standard ruleset.
      */
     if (rulesetId === GameMode.Osu && skills[1]?.title.startsWith('Aim')) {
-      skills.splice(1, 1);
-      colors.splice(1, 1);
+      const totalStrains = skills[0].strainPeaks;
+      const sliderStrains = skills[1].strainPeaks;
+
+      skills[1].title = 'Aim (Sliders)';
+
+      for (let i = 0; i < sliderStrains.length; i++) {
+        sliderStrains[i] = totalStrains[i] - sliderStrains[i];
+      }
     }
 
     const maxPoints = skills.reduce((max, skill) => {
