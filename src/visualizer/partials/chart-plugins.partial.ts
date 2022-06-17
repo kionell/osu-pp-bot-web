@@ -1,16 +1,18 @@
 import { Canvas, Image } from 'skia-canvas';
 import { loadImage } from 'canvas';
 import { BackgroundImagePlugin } from '../plugins/background-image.plugin';
+import { DatasetBlendingPlugin } from '../plugins/dataset-blending-plugin';
 
 export async function getStrainChartPlugins(w: number, h: number, imageURL: string | null): Promise<any[]> {
   const plugins = [
     await getBackgroundImagePlugin(w, h, imageURL),
+    await getDatasetBlendingPlugin(),
   ];
 
   return plugins.filter((x) => x);
 }
 
-function getBackgroundImagePlugin(w: number, h: number, imageURL: string | null): any {
+async function getBackgroundImagePlugin(w: number, h: number, imageURL: string | null): Promise<BackgroundImagePlugin | null> {
   if (!imageURL) return null;
 
   const image = new Image();
@@ -19,7 +21,7 @@ function getBackgroundImagePlugin(w: number, h: number, imageURL: string | null)
 
   return new Promise((res) => {
     image.onload = async () => {
-      ctx.filter = 'blur(4px) brightness(65%) contrast(108%) saturate(110%)';
+      ctx.filter = 'blur(2px) brightness(35%) contrast(108%) saturate(110%)';
       ctx.drawImage(image, -5, -5, w + 5, h + 5);
 
       // Super weird stuff, but it is a way to create filtered images.
@@ -33,4 +35,8 @@ function getBackgroundImagePlugin(w: number, h: number, imageURL: string | null)
 
     image.src = imageURL;
   });
+}
+
+async function getDatasetBlendingPlugin(): Promise<DatasetBlendingPlugin> {
+  return new DatasetBlendingPlugin();
 }

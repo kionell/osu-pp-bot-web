@@ -1,18 +1,18 @@
 import { Scale } from 'chart.js';
 import { decimateTicks } from '../utils/chart.util';
 
-export function getStrainChartOptions(w: number, points: number, isDarkPicture: boolean): any {
+export function getStrainChartOptions(w: number, h: number, points: number, isDarkPicture: boolean): any {
   return {
     ...getBaseChartOptions(),
-    scales: getStrainChartScales(w, points, isDarkPicture),
+    scales: getStrainChartScales(w, h, points, isDarkPicture),
     plugins: getStrainChartPlugins(w, isDarkPicture),
   };
 }
 
-function getStrainChartScales(w: number, points: number, isDarkPicture: boolean) {
+function getStrainChartScales(w: number, h: number, points: number, isDarkPicture: boolean) {
   return {
     x: getStrainChartScalesX(w, points, isDarkPicture),
-    y: getStrainChartScalesY(),
+    y: getStrainChartScalesY(h),
   };
 }
 
@@ -46,11 +46,12 @@ function getStrainChartScalesX(w: number, points: number, isDarkPicture: boolean
   };
 }
 
-function getStrainChartScalesY() {
+function getStrainChartScalesY(h: number) {
   return {
-    stacked: true,
+    stacked: false,
     beginAtZero: true,
     title: false,
+    max: h,
     grid: {
       color: 'rgba(0, 0, 0, 0.1)',
       drawTicks: false,

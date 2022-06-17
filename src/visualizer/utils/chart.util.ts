@@ -31,7 +31,7 @@ export function msToTime(ms: number): string {
  * @param maxChunks Max possible points on the chart.
  * @returns Decimated strains.
  */
-export function decimateStrains(strains: number[], maxChunks = 300): ScatterDataPoint[] {
+export function decimateStrains(strains: number[], maxChunks = 200): ScatterDataPoint[] {
   /**
    * Single strain step is 400 ms by default.
    */

@@ -47,6 +47,14 @@ export class VisualizerService {
       };
     });
 
+    const maxHeight = decimated.reduce((max, skill) => {
+      for (const point of skill.data) {
+        max = Math.max(max, point.y);
+      }
+
+      return Math.ceil(max);
+    }, 0);
+
     const datasets = decimated.map((skill, i) => {
       const colors = this.colorUtils.getColorsForRuleset(rulesetId);
 
@@ -69,7 +77,7 @@ export class VisualizerService {
         datasets,
         labels,
       },
-      options: getStrainChartOptions(this.STRAIN_GRAPH_WIDTH, maxPoints, true),
+      options: getStrainChartOptions(this.STRAIN_GRAPH_WIDTH, maxHeight, maxPoints, true),
       plugins,
     });
 

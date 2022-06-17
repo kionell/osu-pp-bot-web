@@ -1,8 +1,8 @@
 import { GameMode } from '@kionell/osu-pp-calculator';
 
 export class ColorUtils {
-  private readonly lineOpacity = 1;
-  private readonly fillOpacity = 1;
+  private readonly lineOpacity = 0.7;
+  private readonly fillOpacity = 0.2;
 
   /**
    * Basic chart line colors.
@@ -40,16 +40,16 @@ export class ColorUtils {
 
   private readonly OSU_COLORS = [
     this.ALL_COLORS[0], // Red
-    this.ALL_COLORS[2], // Yellow
+    this.ALL_COLORS[3], // Yellow
     this.ALL_COLORS[4], // Light Blue
     this.ALL_COLORS[6], // Purple
   ];
 
   private readonly TAIKO_COLORS = [
-    this.ALL_COLORS[2], // Yellow
-    this.ALL_COLORS[5], // Blue
-    this.ALL_COLORS[3], // Green
     this.ALL_COLORS[0], // Red
+    this.ALL_COLORS[3], // Yellow
+    this.ALL_COLORS[4], // Light Blue
+    this.ALL_COLORS[6], // Purple
   ];
 
   private readonly CATCH_COLORS = [
