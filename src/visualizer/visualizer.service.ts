@@ -36,22 +36,6 @@ export class VisualizerService {
 
     if (!skills) return null;
 
-    const colors = this.colorUtils.getColorsForRuleset(rulesetId);
-
-    /**
-     * Remove second aim skill if it's osu!standard ruleset.
-     */
-    if (rulesetId === GameMode.Osu && skills[1]?.title.startsWith('Aim')) {
-      const totalStrains = skills[0].strainPeaks;
-      const sliderStrains = skills[1].strainPeaks;
-
-      skills[1].title = 'Aim (Sliders)';
-
-      for (let i = 0; i < sliderStrains.length; i++) {
-        sliderStrains[i] = totalStrains[i] - sliderStrains[i];
-      }
-    }
-
     const maxPoints = skills.reduce((max, skill) => {
       return Math.max(max, skill.strainPeaks.length);
     }, 0);
@@ -62,6 +46,22 @@ export class VisualizerService {
         data: decimateStrains(skill.strainPeaks),
       };
     });
+
+    const colors = this.colorUtils.getColorsForRuleset(rulesetId);
+
+    /**
+     * Rewrite second aim skill to only show slider aim if it's osu!standard ruleset.
+     */
+    if (rulesetId === GameMode.Osu && skills[1]?.title.startsWith('Aim')) {
+      const totalStrains = decimated[0].data;
+      const sliderStrains = decimated[1].data;
+
+      decimated[1].label = 'Aim (Sliders)';
+
+      for (let i = 0; i < sliderStrains.length; i++) {
+        sliderStrains[i].y = totalStrains[i].y - sliderStrains[i].y;
+      }
+    }
 
     const maxHeight = decimated.reduce((max, skill) => {
       for (const point of skill.data) {
