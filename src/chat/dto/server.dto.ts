@@ -1,3 +1,5 @@
+import { ChatConfigDto } from './configs/chat-config.dto';
+
 /**
  * Server data.
  */
@@ -8,7 +10,7 @@ export class ServerDto {
   id: string | number;
 
   /**
-   * Custom prefix that will be used on this server.
+   * Server config.
    */
-  prefix?: string | null;
+  config?: ChatConfigDto;
 }

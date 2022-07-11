@@ -20,10 +20,6 @@ export class ServerRepository {
       id: serverDto.id.toString(),
     };
 
-    if (typeof serverDto.prefix === 'string' || serverDto.prefix === null) {
-      data.prefix = serverDto.prefix;
-    }
-
     return this.ServerModel
       .findOneAndUpdate(filter, data, { upsert: true, new: true })
       .lean()

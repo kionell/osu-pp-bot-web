@@ -1,3 +1,5 @@
+import { IChatConfigResponse } from './chat-config-response.interface';
+
 /**
  * Nested server object.
  */
@@ -8,7 +10,7 @@ export interface IServerResponse {
   id: string;
 
   /**
-   * Custom prefix that will be used on this server.
+   * Channel config.
    */
-  prefix: string | null;
+  config: IChatConfigResponse;
 }

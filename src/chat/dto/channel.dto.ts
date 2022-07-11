@@ -1,3 +1,4 @@
+import { ChatConfigDto } from './configs/chat-config.dto';
 import { ServerDto } from './server.dto';
 
 /**
@@ -18,4 +19,9 @@ export class ChannelDto {
    * Nested server data.
    */
   server?: ServerDto | null;
+
+  /**
+   * Channel config.
+   */
+  config?: ChatConfigDto;
 }

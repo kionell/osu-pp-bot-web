@@ -1,3 +1,4 @@
+import { IChatConfigResponse } from './chat-config-response.interface';
 import { IServerResponse } from './server-response.interface';
 
 /**
@@ -18,4 +19,9 @@ export interface IChannelResponse {
    * Nested server data.
    */
   server: IServerResponse | null;
+
+  /**
+   * Channel config.
+   */
+  config: IChatConfigResponse;
 }
