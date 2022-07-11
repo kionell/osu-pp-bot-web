@@ -5,7 +5,7 @@ import { BeatmapModule } from './beatmap/beatmap.module';
 import { ScoreModule } from './score/score.module';
 import { ApiModule } from './api/api.module';
 import { VisualizerModule } from './visualizer/visualizer.module';
-import { DiscordModule } from './discord/discord.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { DiscordModule } from './discord/discord.module';
     ScoreModule,
     ApiModule,
     VisualizerModule,
-    DiscordModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

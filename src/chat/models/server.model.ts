@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
-export class DiscordServer {
+export class Server {
   @Prop({ required: true })
     id: string;
 
@@ -10,6 +10,6 @@ export class DiscordServer {
     prefix: string | null;
 }
 
-export const DiscordServerSchema = SchemaFactory.createForClass(DiscordServer);
+export const ServerSchema = SchemaFactory.createForClass(Server);
 
-export type DiscordServerDocument = DiscordServer & mongoose.Document;
+export type ServerDocument = Server & mongoose.Document;

@@ -1,9 +1,9 @@
 /**
- * Discord server data.
+ * Server data.
  */
-export class DiscordServerDto {
+export class ServerDto {
   /**
-   * Discord server ID.
+   * Server ID.
    */
   id: string | number;
 
