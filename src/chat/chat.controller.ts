@@ -9,7 +9,7 @@ import { ChannelDto } from './dto/channel.dto';
 export class ChatController {
   constructor(private readonly ChatService: ChatService) {}
 
-  @Get('/Chat/channels/:id')
+  @Get('/chat/channels/:id')
   async getChannel(@Param('id') channelId: string | number): Promise<IChannelResponse> {
     const cached = await this.ChatService.findOne(channelId);
 
@@ -18,7 +18,7 @@ export class ChatController {
     throw new NotFoundException('Chat channel not found!');
   }
 
-  @Post('/Chat/channels')
+  @Post('/chat/channels')
   async createChannel(@Body() channelDto: ChannelDto): Promise<IChannelResponse> {
     const { id, server } = channelDto;
 
