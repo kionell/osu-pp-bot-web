@@ -34,7 +34,7 @@ export class VisualizerService {
   async generateStrainChart(beatmapStrains: IBeatmapStrains, rulesetId?: GameMode): Promise<string | null> {
     const { skills, beatmapsetId } = beatmapStrains;
 
-    if (!skills) return null;
+    if (!skills?.length) return null;
 
     const maxPoints = skills.reduce((max, skill) => {
       return Math.max(max, skill.strainPeaks.length);
@@ -75,7 +75,7 @@ export class VisualizerService {
       return getStrainChartDataset(skill, colors[i]);
     });
 
-    const labels = datasets[0].data.map((d: any) => {
+    const labels = (datasets[0].data ?? []).map((d: any) => {
       return msToTime(d.x);
     });
 
