@@ -96,7 +96,7 @@ export class VisualizerService {
     });
 
     return new Promise((res) => {
-      const dirPath = './public/strains';
+      const dirPath = process.env.STRAINS_PATH ?? '';
       const fileName = `${SparkMD5.ArrayBuffer.hash(buffer)}.png`;
       const filePath = `${dirPath}/${fileName}`;
 

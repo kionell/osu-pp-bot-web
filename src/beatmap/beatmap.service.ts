@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { IBeatmapResponse } from './interfaces/beatmap-response.interface';
 import { BeatmapOptionsDto } from './dto/beatmap-options.dto';
@@ -59,7 +60,20 @@ export class BeatmapService {
       throw new InternalServerErrorException('Beatmap not found!');
     }
 
-    return cached ?? await this.createAndSaveBeatmap(options);
+    if (!cached) return await this.createAndSaveBeatmap(options);
+
+    const strainGraphPath = process.env.STRAINS_PATH + `/${cached.graphFile}`;
+
+    /**
+     * Recalculate beatmap if strain graph is not found.
+     * This is a lazy fix for the ephemeral storage problem when all 
+     * strain graphs are constantly getting cleared after some short time.
+     */
+    return await new Promise((res) => {
+      fs.promises.access(strainGraphPath, fs.constants.F_OK)
+        .then(() => res(cached))
+        .catch(async () => res(await this.createAndSaveBeatmap(options)));
+    });
   }
 
   /**
