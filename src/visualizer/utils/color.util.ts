@@ -40,14 +40,14 @@ export class ColorUtils {
 
   private readonly OSU_COLORS = [
     this.ALL_COLORS[0], // Red
-    this.ALL_COLORS[3], // Yellow
+    this.ALL_COLORS[3], // Green
     this.ALL_COLORS[4], // Light Blue
     this.ALL_COLORS[6], // Purple
   ];
 
   private readonly TAIKO_COLORS = [
     this.ALL_COLORS[0], // Red
-    this.ALL_COLORS[3], // Yellow
+    this.ALL_COLORS[3], // Green
     this.ALL_COLORS[4], // Light Blue
     this.ALL_COLORS[6], // Purple
   ];
@@ -60,6 +60,13 @@ export class ColorUtils {
     this.ALL_COLORS[6], // Purple
   ];
 
+  private readonly REPLAY_COLORS = [
+    this.ALL_COLORS[3], // Green
+    this.ALL_COLORS[2], // Yellow
+    this.ALL_COLORS[1], // Orange
+    this.ALL_COLORS[0], // Red
+  ];
+
   getColorsForRuleset(rulesetId?: GameMode): string[][] {
     switch (rulesetId) {
       case GameMode.Osu: return this.OSU_COLORS;
@@ -69,5 +76,9 @@ export class ColorUtils {
     }
 
     return this.ALL_COLORS;
+  }
+
+  getLifeBarColors(): string[][] {
+    return this.REPLAY_COLORS;
   }
 }

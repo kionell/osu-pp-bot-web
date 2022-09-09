@@ -19,7 +19,7 @@ export class ScoreRepository {
     private performanceRepository: PerformanceRepository,
   ) {}
 
-  async createOne(data: ICalculatedScore, beatmap: IBeatmapResponse): Promise<IScoreResponse> {
+  async createOne(data: ICalculatedScore, beatmap: IBeatmapResponse, graphFileName: string | null): Promise<IScoreResponse> {
     const { scoreInfo, performance } = data;
 
     const createdStatistics = new this.statisticsModel(scoreInfo);
@@ -31,6 +31,7 @@ export class ScoreRepository {
       ...scoreInfo,
       statistics: createdStatistics,
       performance: createdPerformance,
+      graphFile: graphFileName,
     });
 
     return {

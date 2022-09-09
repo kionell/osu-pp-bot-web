@@ -1,112 +1,72 @@
 import SparkMD5 from 'spark-md5';
-import fs from 'fs';
+import fs from 'fs/promises';
 import { Injectable } from '@nestjs/common';
 import { GameMode } from '@kionell/osu-pp-calculator';
-import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
+import { StrainChartService } from './strains/strain-chart.service';
+import { IBeatmapStrains } from './strains/interfaces/beatmap-strains.interface';
 import { ApiService } from '../api/api.service';
-import { IBeatmapStrains } from './interfaces/beatmap-strains.interface';
-import { getStrainChartDataset } from './partials/chart-dataset.partial';
-import { getStrainChartOptions } from './partials/chart-options.partial';
-import { getStrainChartPlugins } from './partials/chart-plugins.partial';
-import { ColorUtils } from './utils/color.util';
-import { decimateStrains, msToTime } from './utils/chart.util';
+import { ILifeBarFrame } from 'osu-classes';
+import { ReplayChartService } from './replays/replay-chart.service';
 
 @Injectable()
 export class VisualizerService {
   constructor(
     private apiService: ApiService,
-    private colorUtils: ColorUtils,
+    private strainChartService: StrainChartService,
+    private replayChartService: ReplayChartService,
   ) {}
-
-  readonly STRAIN_GRAPH_WIDTH = 552;
-  readonly STRAIN_GRAPH_HEIGHT = 150;
-
-  private strainChart = new ChartJSNodeCanvas({
-    width: this.STRAIN_GRAPH_WIDTH,
-    height: this.STRAIN_GRAPH_HEIGHT,
-  });
 
   /**
    * Generates a new PNG image of beatmap strains.
-   * @param beatmapStrains Data for generating strain chart.
+   * @param strains Data for generating strain chart.
+   * @param rulesetId Ruleset of the strain chart.
    * @returns Name of the generated file or null.
    */
-  async generateStrainChart(beatmapStrains: IBeatmapStrains, rulesetId?: GameMode): Promise<string | null> {
-    const { skills, beatmapsetId } = beatmapStrains;
+  async generateStrainChart(strains: IBeatmapStrains, rulesetId?: GameMode): Promise<string | null> {
+    const skills = strains.skills;
 
-    if (!skills?.length) return null;
+    if (!skills || !skills.length) return null;
 
-    const maxPoints = skills.reduce((max, skill) => {
-      return Math.max(max, skill.strainPeaks.length);
-    }, 0);
+    const backgroundURL = this.getBackgroundURL(strains.beatmapsetId);
 
-    const decimated = skills.map((skill) => {
-      return {
-        label: skill.title,
-        data: decimateStrains(skill.strainPeaks),
-      };
-    });
+    const buffer = await this.strainChartService
+      .generateImage(skills, backgroundURL, rulesetId);
 
-    const colors = this.colorUtils.getColorsForRuleset(rulesetId);
+    const dirPath = process.env.STRAIN_GRAPH_PATH ?? '';
 
-    /**
-     * Rewrite second aim skill to only show slider aim if it's osu!standard ruleset.
-     */
-    if (rulesetId === GameMode.Osu && skills[1]?.title.startsWith('Aim')) {
-      const totalStrains = decimated[0].data;
-      const sliderStrains = decimated[1].data;
+    return buffer ? this.getFileName(buffer, dirPath) : null;
+  }
 
-      decimated[1].label = 'Aim (Sliders)';
+  /**
+   * Generates a new PNG image of beatmap strains.
+   * @param lifeBar Data for generating strain chart.
+   * @returns Name of the generated file or null.
+   */
+  async generateReplayChart(lifeBar?: ILifeBarFrame[], beatmapsetId?: number): Promise<string | null> {
+    if (!lifeBar || !lifeBar.length) return null;
 
-      for (let i = 0; i < sliderStrains.length; i++) {
-        sliderStrains[i].y = totalStrains[i].y - sliderStrains[i].y;
-      }
-    }
+    const backgroundURL = this.getBackgroundURL(beatmapsetId);
 
-    const maxHeight = decimated.reduce((max, skill) => {
-      for (const point of skill.data) {
-        max = Math.max(max, point.y);
-      }
+    const buffer = await this.replayChartService
+      .generateImage(lifeBar, backgroundURL);
 
-      return Math.ceil(max);
-    }, 0);
+    const dirPath = process.env.REPLAY_GRAPH_PATH ?? '';
 
-    const datasets = decimated.map((skill, i) => {
-      return getStrainChartDataset(skill, colors[i]);
-    });
+    return buffer ? this.getFileName(buffer, dirPath) : null;
+  }
 
-    const labels = (datasets[0].data ?? []).map((d: any) => {
-      return msToTime(d.x);
-    });
-
-    const plugins = await getStrainChartPlugins(
-      this.STRAIN_GRAPH_WIDTH,
-      this.STRAIN_GRAPH_HEIGHT,
-      this.getBackgroundURL(beatmapsetId),
-    );
-
-    const buffer = await this.strainChart.renderToBuffer({
-      type: 'line',
-      data: {
-        datasets,
-        labels,
-      },
-      options: getStrainChartOptions(this.STRAIN_GRAPH_WIDTH, maxHeight, maxPoints, true),
-      plugins,
-    });
-
+  private async getFileName(buffer: Buffer, dirPath: string): Promise<string | null> {
     return new Promise((res) => {
-      const dirPath = process.env.STRAINS_PATH ?? '';
       const fileName = `${SparkMD5.ArrayBuffer.hash(buffer)}.png`;
       const filePath = `${dirPath}/${fileName}`;
 
-      fs.mkdir(dirPath, { recursive: true }, (err) => {
-        if (err) return res(null);
-
-        fs.writeFile(filePath, buffer, (err) => {
-          res(err ? null : fileName);
-        });
-      });
+      fs.mkdir(dirPath, { recursive: true })
+        .then(() => {
+          fs.writeFile(filePath, buffer)
+            .then(() => res(fileName))
+            .catch(() => res(null));
+        })
+        .catch(() => res(null));
     });
   }
 

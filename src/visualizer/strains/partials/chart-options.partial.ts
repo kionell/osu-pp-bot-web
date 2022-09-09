@@ -1,5 +1,5 @@
 import { Scale } from 'chart.js';
-import { decimateTicks } from '../utils/chart.util';
+import { decimateTicks } from '../../utils/chart.util';
 
 export function getStrainChartOptions(w: number, h: number, points: number, isDarkPicture: boolean): any {
   return {

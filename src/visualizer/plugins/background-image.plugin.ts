@@ -13,13 +13,15 @@ export class BackgroundImagePlugin {
   /**
    * Image that will be used to draw chart background.
    */
-  private image: Image;
+  private image: Image | null;
 
-  constructor(image: Image) {
+  constructor(image: Image | null) {
     this.image = image;
   }
 
   beforeDraw(chart: Chart): void {
+    if (!this.image) return;
+
     chart.ctx.drawImage(this.image as any, 0, 0);
   }
 }

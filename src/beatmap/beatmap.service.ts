@@ -62,7 +62,7 @@ export class BeatmapService {
 
     if (!cached) return await this.createAndSaveBeatmap(options);
 
-    const strainGraphPath = process.env.STRAINS_PATH + `/${cached.graphFile}`;
+    const strainGraphPath = process.env.STRAIN_GRAPH_PATH + `/${cached.graphFile}`;
 
     /**
      * Recalculate beatmap if strain graph is not found.

@@ -2,18 +2,12 @@ import { Canvas, Image } from 'skia-canvas';
 import { loadImage } from 'canvas';
 import { BackgroundImagePlugin } from '../plugins/background-image.plugin';
 import { DatasetBlendingPlugin } from '../plugins/dataset-blending-plugin';
+import { VerticalGradientPlugin } from '../plugins/vertical-gradient.plugin';
 
-export async function getStrainChartPlugins(w: number, h: number, imageURL: string | null): Promise<any[]> {
-  const plugins = [
-    await getBackgroundImagePlugin(w, h, imageURL),
-    await getDatasetBlendingPlugin(),
-  ];
-
-  return plugins.filter((x) => x);
-}
-
-async function getBackgroundImagePlugin(w: number, h: number, imageURL: string | null): Promise<BackgroundImagePlugin | null> {
-  if (!imageURL) return null;
+export async function getBackgroundImagePlugin(w: number, h: number, imageURL: string | null): Promise<BackgroundImagePlugin> {
+  if (!imageURL) {
+    return new BackgroundImagePlugin(null);
+  }
 
   const image = new Image();
   const canvas = new Canvas(w, h);
@@ -31,12 +25,18 @@ async function getBackgroundImagePlugin(w: number, h: number, imageURL: string |
       res(new BackgroundImagePlugin(filtered));
     };
 
-    image.onerror = () => res(null);
+    image.onerror = () => {
+      res(new BackgroundImagePlugin(null));
+    };
 
     image.src = imageURL;
   });
 }
 
-async function getDatasetBlendingPlugin(): Promise<DatasetBlendingPlugin> {
+export async function getDatasetBlendingPlugin(): Promise<DatasetBlendingPlugin> {
   return new DatasetBlendingPlugin();
+}
+
+export async function getVerticalGradientPlugin(colors: string[][]): Promise<VerticalGradientPlugin> {
+  return new VerticalGradientPlugin(colors);
 }

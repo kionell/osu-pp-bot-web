@@ -1,5 +1,6 @@
 import { IScoreInfo } from 'osu-classes';
 import { Injectable } from '@nestjs/common';
+import { IScoreCalculationOptions } from '@kionell/osu-pp-calculator';
 import { IScoreResponse } from './interfaces/score-response.interface';
 import { ScoreOptionsDto } from './dto/score-options.dto';
 import { ScoreRepository } from './repositories/score.repository';
@@ -7,11 +8,13 @@ import { ApiService } from '../api/api.service';
 import { CalculatorService } from '../calculator/calculator.service';
 import { BeatmapService } from '../beatmap/beatmap.service';
 import { ConversionUtils } from '../beatmap/utils/conversion.util';
+import { VisualizerService } from '../visualizer/visualizer.service';
 
 @Injectable()
 export class ScoreService {
   constructor(
     private apiService: ApiService,
+    private visualizerService: VisualizerService,
     private beatmapService: BeatmapService,
     private calculatorService: CalculatorService,
     private scoreRepository: ScoreRepository,
@@ -38,7 +41,7 @@ export class ScoreService {
 
     const attributes = this.conversionUtils.createBeatmapAttributes(beatmap);
 
-    const scoreOptions = {
+    const scoreOptions: IScoreCalculationOptions = {
       ...options,
       savePath: process.env.CACHE_PATH,
       beatmapId: beatmap.id,
@@ -48,6 +51,10 @@ export class ScoreService {
       scoreInfo: scoreInfo?.toJSON(),
       attributes,
     };
+
+    if (options.replayURL) {
+      scoreOptions.lifeBar = true;
+    }
 
     /**
      * We need to remove replay if we are trying to simulate score.
@@ -59,7 +66,16 @@ export class ScoreService {
       ? await this.calculatorService.simulateScore(scoreOptions)
       : await this.calculatorService.calculateScore(scoreOptions);
 
-    return this.scoreRepository.createOne(calculated, beatmap);
+    let graphFileName = null;
+
+    if (options.drawGraph) {
+      graphFileName = await this.visualizerService.generateReplayChart(
+        calculated.lifeBar,
+        beatmap.metadata.beatmapsetId,
+      );
+    }
+
+    return this.scoreRepository.createOne(calculated, beatmap, graphFileName);
   }
 
   /**

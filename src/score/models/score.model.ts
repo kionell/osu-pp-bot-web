@@ -56,6 +56,9 @@ export class Score {
 
   @Prop({ type: PerformanceSchema, required: true })
     performance: Performance;
+
+  @Prop({ required: true })
+    graphFile: string;
 }
 
 export const ScoreSchema = SchemaFactory.createForClass(Score);

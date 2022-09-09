@@ -9,6 +9,7 @@ import { ApiModule } from '../api/api.module';
 import { BeatmapModule } from '../beatmap/beatmap.module';
 import { CalculatorModule } from '../calculator/calculator.module';
 import { PerformanceModule } from '../performance/performance.module';
+import { VisualizerModule } from '../visualizer/visualizer.module';
 
 @Module({
   controllers: [ScoreController],
@@ -21,6 +22,7 @@ import { PerformanceModule } from '../performance/performance.module';
     BeatmapModule,
     CalculatorModule,
     PerformanceModule,
+    VisualizerModule,
     MongooseModule.forFeature([
       {
         name: Score.name,

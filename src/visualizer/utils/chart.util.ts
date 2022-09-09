@@ -1,4 +1,4 @@
-import { ScatterDataPoint, Tick } from 'chart.js';
+import { Tick } from 'chart.js';
 
 /**
  * Converts milliseconds to timespan.
@@ -23,31 +23,6 @@ export function msToTime(ms: number): string {
   }
 
   return values.join(':');
-}
-
-/**
- * Reduces ammount of strains that will be drawn on the chart.
- * @param strains Strains to be decimated.
- * @param maxChunks Max possible points on the chart.
- * @returns Decimated strains.
- */
-export function decimateStrains(strains: number[], maxChunks = 200): ScatterDataPoint[] {
-  /**
-   * Single strain step is 400 ms by default.
-   */
-  const STRAIN_STEP = 400;
-
-  const chunkSize = Math.ceil(strains.length / maxChunks);
-
-  const decimated = [];
-
-  for (let i = 0; i < strains.length; i += chunkSize) {
-    const peaks = strains.slice(i, i + chunkSize);
-
-    decimated.push({ x: i * STRAIN_STEP, y: Math.max(...peaks) });
-  }
-
-  return decimated;
 }
 
 /**
