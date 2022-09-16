@@ -21,34 +21,17 @@ export class BeatmapRepository {
     private performanceRepository: PerformanceRepository,
   ) {}
 
-  getOriginalFilter(options: BeatmapOptionsDto): Partial<Beatmap> {
-    const { beatmapId, hash } = options;
-
-    const filter: Partial<Beatmap> = {
-      isConvert: false,
-    };
-
-    if (typeof beatmapId === 'number' && beatmapId) {
-      filter.id = beatmapId;
-    }
-
-    if (typeof hash === 'string' && hash) {
-      filter.hash = hash;
-    }
-
-    return filter;
-  }
-
   getFilter(options: BeatmapOptionsDto): Partial<Beatmap> {
     const { beatmapId, rulesetId, hash, mods } = options;
 
-    if (typeof rulesetId !== 'number') {
-      return this.getOriginalFilter(options);
-    }
+    const filter: Partial<Beatmap> = {};
 
-    const filter: Partial<Beatmap> = {
-      rulesetId,
-    };
+    if (typeof rulesetId !== 'number') {
+      filter.isConvert = false;
+    }
+    else {
+      filter.rulesetId = rulesetId;
+    }
 
     if (typeof beatmapId === 'number' && beatmapId) {
       filter.id = beatmapId;
@@ -88,20 +71,22 @@ export class BeatmapRepository {
   async saveOne(calculated: ICalculatedBeatmap, graphFileName: string | null): Promise<IBeatmapResponse> {
     const { beatmapInfo, attributes, difficulty, performance } = calculated;
 
-    const savedBeatmapGeneral = await this.beatmapGeneralRepository
-      .saveOne(beatmapInfo, attributes);
+    const savedBeatmapGeneral = await this.beatmapGeneralRepository.saveOne(
+      beatmapInfo,
+      attributes,
+    );
 
-    const savedBeatmapMetadata = await this.beatmapMetadataRepository
-      .saveOne(beatmapInfo);
+    const savedBeatmapMetadata = await this.beatmapMetadataRepository.saveOne(
+      beatmapInfo,
+    );
 
-    const savedDifficulty = await this.difficultyRepository
-      .saveOne(
-        beatmapInfo.id,
-        beatmapInfo.mods,
-        beatmapInfo.rulesetId,
-        beatmapInfo.md5,
-        difficulty,
-      );
+    const savedDifficulty = await this.difficultyRepository.saveOne(
+      beatmapInfo.id,
+      beatmapInfo.mods,
+      beatmapInfo.rulesetId,
+      beatmapInfo.md5,
+      difficulty,
+    );
 
     const createdPerformance = performance.map((pp) => {
       return this.performanceRepository.createOne(pp, beatmapInfo.rulesetId);
