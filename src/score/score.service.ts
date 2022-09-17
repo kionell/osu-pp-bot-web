@@ -29,7 +29,7 @@ export class ScoreService {
    * @returns Score response.
    */
   async processByDefault(options: ScoreOptionsDto, simulate = false, scoreInfo?: IScoreInfo): Promise<IScoreResponse> {
-    const beatmap = await this.beatmapService.processByDefault({
+    const beatmap = await this.beatmapService.processBeatmap({
       beatmapId: options.beatmapId ?? scoreInfo?.beatmapId,
       fileURL: options.fileURL,
       replayURL: options.replayURL,

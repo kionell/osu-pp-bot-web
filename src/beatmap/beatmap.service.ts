@@ -1,11 +1,14 @@
 import fs from 'fs';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { IBeatmapInfo } from 'osu-classes';
+import { ICalculatedBeatmap, parseScore } from '@kionell/osu-pp-calculator';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { IBeatmapResponse } from './interfaces/beatmap-response.interface';
 import { BeatmapOptionsDto } from './dto/beatmap-options.dto';
 import { BeatmapRepository } from './repositories/beatmap.repository';
-import { DownloadUtils } from '../api/utils/download.util';
 import { CalculatorService } from '../calculator/calculator.service';
 import { VisualizerService } from '../visualizer/visualizer.service';
+import { ApiService } from '../api/api.service';
+import { downloadBeatmap } from './utils/download.utils';
 
 @Injectable()
 export class BeatmapService {
@@ -13,20 +16,80 @@ export class BeatmapService {
     private beatmapRepository: BeatmapRepository,
     private calculatorService: CalculatorService,
     private visualizerService: VisualizerService,
-    private downloadUtils: DownloadUtils,
+    private apiService: ApiService,
   ) {}
 
+  async processBeatmap(options: BeatmapOptionsDto, compact = false): Promise<IBeatmapResponse> {
+    if (options.beatmapId || options.hash || options.fileURL || options.search) {
+      return this.processDefault(options, compact);
+    }
+
+    if (options.replayURL) {
+      return this.processByReplay(options, compact);
+    }
+
+    throw new BadRequestException('Not enough data to get a beatmap!');
+  }
+
   /**
-   * Gets beatmap data from database or calculates it.
+   * This function tries to handle the case when we have only replay URL or search query.
+   * Possible ways to get beatmap response:
+   *  1) Find it in the database by using beatmap MD5 checksum from replay.
+   * 
+   * Possible ways to recalculate beatmap:
+   *  1) By getting beatmap ID from cached response.
+   *  2) By getting beatmap ID from the osu! API using MD5 from replay.
+   * 
+   * Limitations:
+   *  1) Unsubmitted beatmaps can't be recalculated with this function as we don't have file URL.
+   *  2) Beatmaps can't be found in the database without replay URL.
+   * 
    * @param options Beatmap options.
    * @param compact Return beatmap response without performance?
    * @returns Beatmap response.
    */
-  async processByDefault(options: BeatmapOptionsDto, compact = false): Promise<IBeatmapResponse> {
-    if (!options.beatmapId && !options.fileURL && !options.hash && options.replayURL) {
-      const hash = await this.downloadUtils.getBeatmapMD5OrNull(options);
+  async processByReplay(options: BeatmapOptionsDto, compact = false): Promise<IBeatmapResponse> {
+    const score = await parseScore({
+      replayURL: options.replayURL,
+      savePath: process.env.CACHE_PATH,
+      lifeBar: false,
+    });
 
-      if (hash) options.hash = hash;
+    options.hash = score.data.info.beatmapHashMD5;
+    options.mods ??= score.data.info.rawMods;
+    options.rulesetId ??= score.data.info.rulesetId;
+
+    if (!options.hash) {
+      throw new InternalServerErrorException('Failed to get beatmap MD5 from the replay file!');
+    }
+
+    return this.processDefault(options, compact);
+  }
+
+  /**
+   * This function is for default case when we have at least one of these:
+   *  1) beatmap ID;
+   *  2) beatmap file URL;
+   *  3) beatmap MD5 checksum;
+   *  4) beatmap search query.
+   * We can get beatmap response directly from the database or calculate it.
+   * @param options Beatmap options.
+   * @param compact Return beatmap response without performance?
+   * @returns Beatmap response.
+   */
+  private async processDefault(options: BeatmapOptionsDto, compact: boolean): Promise<IBeatmapResponse> {
+    let originalInfo: IBeatmapInfo | null = null;
+
+    if (!options.beatmapId && !options.fileURL && (options.hash || options.search)) {
+      originalInfo = await this.apiService.getBeatmap(options.server, options);
+
+      options.beatmapId ||= originalInfo?.id;
+      options.hash ||= originalInfo?.md5;
+    }
+
+    // This is possible only if we had search query and nothing else.
+    if (!options.beatmapId && !options.fileURL && !options.hash) {
+      throw new InternalServerErrorException('Beatmap not found!');
     }
 
     /**
@@ -35,32 +98,20 @@ export class BeatmapService {
      * Workers will simply have different caching instances 
      * which will cause unexpected file changes while beatmap parsing.
      */
-    const result = await this.downloadUtils.downloadBeatmap(options);
+    const result = await downloadBeatmap(options);
 
-    console.log(`Beatmap (${result.id || result.url}) download with status: "${result.statusText}"`);
+    if (result.md5) options.hash ??= result.md5;
 
-    if (typeof options.hash !== 'string') {
-      options.hash = result.md5 as string;
-    }
-
-    const rulesetId = await this.getRulesetIdOrNull(options);
-
-    if (typeof rulesetId === 'number') {
-      options.rulesetId = rulesetId;
-    }
-
-    if (options.recalculate || (!options.beatmapId && !options.hash)) {
-      return await this.createAndSaveBeatmap(options);
+    if (options.recalculate) {
+      return await this.createAndSaveBeatmap(options, originalInfo);
     }
 
     const filter = this.beatmapRepository.getFilter(options);
     const cached = await this.beatmapRepository.findOne(filter, compact);
 
-    if (!cached && !options.beatmapId && !options.fileURL) {
-      throw new InternalServerErrorException('Beatmap not found!');
+    if (!cached) {
+      return await this.createAndSaveBeatmap(options, originalInfo);
     }
-
-    if (!cached) return await this.createAndSaveBeatmap(options);
 
     const strainGraphPath = process.env.STRAIN_GRAPH_PATH + `/${cached.graphFile}`;
 
@@ -72,28 +123,8 @@ export class BeatmapService {
     return await new Promise((res) => {
       fs.promises.access(strainGraphPath, fs.constants.F_OK)
         .then(() => res(cached))
-        .catch(async () => res(await this.createAndSaveBeatmap(options)));
+        .catch(async () => res(await this.createAndSaveBeatmap(options, originalInfo)));
     });
-  }
-
-  /**
-   * Searches for original (not converted) beatmap in database and tries to get it ruleset ID.
-   * @param options Beatmap options.
-   * @returns Found ruleset ID or null.
-   */
-  private async getRulesetIdOrNull(options: BeatmapOptionsDto): Promise<number | null> {
-    if (!options.beatmapId && !options.hash) {
-      return null;
-    }
-
-    if (typeof options.rulesetId !== 'number') {
-      const filter = this.beatmapRepository.getOriginalFilter(options);
-      const original = await this.beatmapRepository.findOne(filter);
-
-      if (original) return original.rulesetId;
-    }
-
-    return options.rulesetId ?? null;
   }
 
   /**
@@ -101,16 +132,11 @@ export class BeatmapService {
    * Result will be saved to database after all calculations.
    * Calculated data will be transformed to beatmap response.
    * @param options Beatmap options.
+   * @param originalInfo Beatmap information or null.
    * @returns Formatted beatmap response.
    */
-  async createAndSaveBeatmap(options: BeatmapOptionsDto): Promise<IBeatmapResponse> {
-    const calculated = await this.calculatorService.calculateBeatmap({
-      ...options,
-      beatmapId: options?.beatmapId,
-      rulesetId: options?.rulesetId,
-      savePath: process.env.CACHE_PATH,
-      strains: true,
-    });
+  async createAndSaveBeatmap(options: BeatmapOptionsDto, originalInfo: IBeatmapInfo | null): Promise<IBeatmapResponse> {
+    const calculated = await this.createBeatmap(options, originalInfo);
 
     const strains = {
       beatmapsetId: calculated.beatmapInfo.beatmapsetId,
@@ -123,5 +149,52 @@ export class BeatmapService {
       .generateStrainChart(strains, rulesetId);
 
     return this.beatmapRepository.saveOne(calculated, graphFileName);
+  }
+
+  /**
+   * Calculates beatmap and performs a request to get beatmap info.
+   * @param options Beatmap options.
+   * @param originalInfo Beatmap information or null.
+   * @returns Calculated beatmap with beatmap info from the API.
+   */
+  async createBeatmap(options: BeatmapOptionsDto, originalInfo: IBeatmapInfo | null): Promise<ICalculatedBeatmap> {
+    const calculationOptions = {
+      ...options,
+      savePath: process.env.CACHE_PATH,
+      strains: true,
+    };
+
+    let beatmapInfo = originalInfo;
+    let calculated = null;
+
+    if (originalInfo) {
+      calculated = await this.calculatorService.calculateBeatmap(calculationOptions);
+    }
+    else {
+      /**
+       * We can save some time by starting the calculation 
+       * without waiting for the result of the request.
+       */
+      const awaited = await Promise.all([
+        this.apiService.getBeatmap(options.server, options),
+        this.calculatorService.calculateBeatmap(calculationOptions),
+      ]);
+
+      beatmapInfo = awaited[0] as IBeatmapInfo | null;
+      calculated = awaited[1] as ICalculatedBeatmap;
+    }
+
+    if (beatmapInfo) {
+      calculated.beatmapInfo.beatmapsetId = beatmapInfo.beatmapsetId;
+      calculated.beatmapInfo.creatorId = beatmapInfo.creatorId;
+      calculated.beatmapInfo.favourites = beatmapInfo.favourites;
+      calculated.beatmapInfo.passcount = beatmapInfo.passcount;
+      calculated.beatmapInfo.playcount = beatmapInfo.playcount;
+      calculated.beatmapInfo.status = beatmapInfo.status;
+      calculated.beatmapInfo.deletedAt = beatmapInfo.deletedAt;
+      calculated.beatmapInfo.updatedAt = beatmapInfo.updatedAt;
+    }
+
+    return calculated;
   }
 }
