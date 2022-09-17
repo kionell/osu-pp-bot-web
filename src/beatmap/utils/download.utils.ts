@@ -1,4 +1,5 @@
 import { downloadFile } from '@kionell/osu-pp-calculator';
+import { InternalServerErrorException } from '@nestjs/common';
 import { DownloadType, IDownloadEntryOptions } from 'osu-downloader';
 import { BeatmapOptionsDto } from '../dto/beatmap-options.dto';
 
@@ -27,5 +28,19 @@ export async function downloadBeatmap(options: BeatmapOptionsDto): ReturnType<ty
     downloadOptions.url = options.fileURL;
   }
 
-  return await downloadFile(savePath, downloadOptions);
+  const result = await downloadFile(savePath, downloadOptions);
+
+  console.log(`Beatmap (${result.id || result.url}) download with status: "${result.statusText}"`);
+
+  if (!result.isSuccessful) {
+    const error = result.statusText === 'File is empty' ? 'Not found' : result.statusText;
+
+    throw new InternalServerErrorException(`Failed to download beatmap file: ${error}`);
+  }
+
+  if (!result.md5) {
+    throw new InternalServerErrorException('Failed to get MD5 checksum of downloaded file!');
+  }
+
+  return result;
 }
