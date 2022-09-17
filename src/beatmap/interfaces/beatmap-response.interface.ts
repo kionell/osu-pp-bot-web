@@ -10,6 +10,11 @@ export interface IBeatmapResponse {
   id: number;
 
   /**
+   * Custom beatmap file URL.
+   */
+  fileURL?: string;
+
+  /**
    * Beatmap MD5 hash.
    */
   hash: string;

@@ -22,7 +22,7 @@ export class BeatmapRepository {
   ) {}
 
   getFilter(options: BeatmapOptionsDto): Partial<Beatmap> {
-    const { beatmapId, rulesetId, hash, mods } = options;
+    const { beatmapId, fileURL, hash, rulesetId, mods } = options;
 
     const filter: Partial<Beatmap> = {};
 
@@ -35,6 +35,10 @@ export class BeatmapRepository {
 
     if (typeof beatmapId === 'number' && beatmapId) {
       filter.id = beatmapId;
+    }
+
+    if (typeof fileURL === 'string' && fileURL) {
+      filter.fileURL = fileURL;
     }
 
     if (typeof hash === 'string' && hash) {
@@ -68,7 +72,7 @@ export class BeatmapRepository {
     return deleted ? this.transformData(deleted) : null;
   }
 
-  async saveOne(calculated: ICalculatedBeatmap, graphFileName: string | null): Promise<IBeatmapResponse> {
+  async saveOne(calculated: ICalculatedBeatmap, graphFileName: string | null, fileURL?: string): Promise<IBeatmapResponse> {
     const { beatmapInfo, attributes, difficulty, performance } = calculated;
 
     const savedBeatmapGeneral = await this.beatmapGeneralRepository.saveOne(
@@ -107,6 +111,7 @@ export class BeatmapRepository {
       metadata: savedBeatmapMetadata,
       difficulty: savedDifficulty,
       performance: createdPerformance,
+      fileURL,
     };
 
     const saved = await this.beatmapModel

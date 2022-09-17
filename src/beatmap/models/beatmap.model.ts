@@ -10,6 +10,9 @@ export class Beatmap {
   @Prop({ required: true })
     id: number;
 
+  @Prop()
+    fileURL?: string;
+
   @Prop({ required: true })
     hash: string;
 
