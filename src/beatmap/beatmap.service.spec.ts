@@ -167,4 +167,13 @@ describe('Beatmap Service', async () => {
 
     await expect(response).rejects.toThrow();
   });
+
+  it('Should throw error when beatmap MD5 & replay beatmap MD5 don\'t match', async () => {
+    const response = service.processBeatmap({
+      fileURL: 'https://cdn.discordapp.com/attachments/484409485436256256/1020662290208530442/2.osu',
+      replayURL: 'https://cdn.discordapp.com/attachments/484409485436256256/1020662289877172304/1.osr',
+    });
+
+    await expect(response).rejects.toThrow();
+  });
 });
