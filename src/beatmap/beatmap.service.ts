@@ -37,12 +37,9 @@ export class BeatmapService {
    *  1) Find it in the database by using beatmap MD5 checksum from replay.
    * 
    * Possible ways to recalculate beatmap:
-   *  1) By getting beatmap ID from cached response.
-   *  2) By getting beatmap ID from the osu! API using MD5 from replay.
-   * 
-   * Limitations:
-   *  1) Unsubmitted beatmaps can't be recalculated with this function as we don't have file URL.
-   *  2) Beatmaps can't be found in the database without replay URL.
+   *  1) By getting beatmap file URL from cached response.
+   *  2) By getting beatmap ID from cached response.
+   *  3) By getting beatmap ID from the osu! API using MD5 from replay.
    * 
    * @param options Beatmap options.
    * @param compact Return beatmap response without performance?
@@ -80,6 +77,7 @@ export class BeatmapService {
   private async processDefault(options: BeatmapOptionsDto, compact: boolean): Promise<IBeatmapResponse> {
     let originalInfo: IBeatmapInfo | null = null;
 
+    // Try to get beatmap ID from API if we have hash or search query.
     if (!options.beatmapId && !options.fileURL && (options.hash || options.search)) {
       originalInfo = await this.apiService.getBeatmap(options.server, options);
 
@@ -87,29 +85,30 @@ export class BeatmapService {
       options.hash ||= originalInfo?.md5;
     }
 
-    // This is possible only if we had search query and nothing else.
+    // This is possible only if we had search query and beatmap wasn't found.
     if (!options.beatmapId && !options.fileURL && !options.hash) {
       throw new InternalServerErrorException('Beatmap not found!');
     }
 
-    /**
-     * We need to download all files in main thread 
-     * because downloader relies on static cache of processed URLs.
-     * Workers will simply have different caching instances 
-     * which will cause unexpected file changes while beatmap parsing.
-     */
-    const result = await downloadBeatmap(options);
+    if (options.beatmapId || options.fileURL) {
+      /**
+       * We need to download all files in main thread 
+       * because downloader relies on static queue of processed URLs.
+       * Workers will simply have different queue instances 
+       * which will cause unexpected file changes while beatmap parsing.
+       */
+      const result = await downloadBeatmap(options);
 
-    if (result.md5) options.hash ??= result.md5;
-
-    if (options.recalculate) {
-      return await this.createAndSaveBeatmap(options, originalInfo);
+      if (result.md5) options.hash ??= result.md5;
     }
 
     const filter = this.beatmapRepository.getFilter(options);
     const cached = await this.beatmapRepository.findOne(filter, compact);
 
-    if (!cached) {
+    if (cached?.fileURL) options.fileURL ??= cached.fileURL;
+    if (cached?.hash) options.hash ??= cached.hash;
+
+    if (!cached || options.recalculate) {
       return await this.createAndSaveBeatmap(options, originalInfo);
     }
 
@@ -148,7 +147,7 @@ export class BeatmapService {
     const graphFileName = await this.visualizerService
       .generateStrainChart(strains, rulesetId);
 
-    return this.beatmapRepository.saveOne(calculated, graphFileName);
+    return this.beatmapRepository.saveOne(calculated, graphFileName, options.fileURL);
   }
 
   /**

@@ -45,6 +45,7 @@ export class ScoreService {
       ...options,
       savePath: process.env.CACHE_PATH,
       beatmapId: beatmap.id,
+      fileURL: beatmap.fileURL,
       rulesetId: beatmap.rulesetId,
       mods: beatmap.mods,
       difficulty: beatmap.difficulty,
