@@ -29,7 +29,8 @@
     "@nestjs/mongoose": "^9.1.0",
     "@nestjs/platform-express": "^8.1.1",
     "axios": "^0.27.2",
-    "chart.js": "^3.7.1",
+    "canvas": "^2.10.1",
+    "chart.js": "^3.9.1",
     "chartjs-adapter-moment": "^1.0.0",
     "chartjs-node-canvas": "^4.1.6",
     "eslint-plugin-import": "^2.26.0",
@@ -39,7 +40,7 @@
     "osu-classes": "^1.0.2",
     "osu-downloader": "^0.6.3",
     "piscina": "^3.2.0",
-    "skia-canvas": "^0.9.29",
+    "skia-canvas": "^0.9.30",
     "spark-md5": "^3.0.2"
   },
   "devDependencies": {
