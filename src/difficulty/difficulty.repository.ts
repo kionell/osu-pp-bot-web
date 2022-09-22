@@ -60,7 +60,7 @@ export class DifficultyRepository {
 
     const Model = this.getModel(rulesetId);
 
-    return await Model.create(data).then((doc) => doc.toObject());
+    return new Model(data).toObject();
   }
 
   async saveOne(
