@@ -16,6 +16,28 @@ export class BeatmapGeneralRepository {
     private catchBeatmapGeneralModel: Model<CatchBeatmapGeneral>,
   ) {}
 
+  async createOne(beatmapInfo: IJsonableBeatmapInfo, attributes: IBeatmapAttributes): Promise<BeatmapGeneral> {
+    const { id, md5, mods, rulesetId } = beatmapInfo;
+
+    const targetMods = toDifficultyMods(mods, rulesetId);
+
+    const data: Partial<CatchBeatmapGeneral> = {
+      ...beatmapInfo,
+      totalHits: attributes.totalHits,
+      maxFruits: attributes.maxFruits,
+      maxDroplets: attributes.maxDroplets,
+      maxTinyDroplets: attributes.maxTinyDroplets,
+      mods: targetMods.toString(),
+      beatmapId: id,
+      hash: md5,
+      rulesetId,
+    };
+
+    const Model = this.getModel(rulesetId);
+
+    return new Model(data).toObject();
+  }
+
   async saveOne(beatmapInfo: IJsonableBeatmapInfo, attributes: IBeatmapAttributes): Promise<BeatmapGeneral> {
     const { id, md5, mods, rulesetId } = beatmapInfo;
 

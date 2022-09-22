@@ -37,6 +37,10 @@ export class ScoreService {
       search: options.search,
       rulesetId: options.rulesetId ?? scoreInfo?.rulesetId,
       mods: options.mods ?? scoreInfo?.mods?.toString() ?? scoreInfo?.rawMods,
+      approachRate: options.approachRate,
+      overallDifficulty: options.overallDifficulty,
+      circleSize: options.circleSize,
+      clockRate: options.clockRate,
     }, true);
 
     const attributes = this.conversionUtils.createBeatmapAttributes(beatmap);

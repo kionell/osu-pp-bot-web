@@ -108,6 +108,15 @@ export class BeatmapService {
     if (cached?.fileURL) options.fileURL ??= cached.fileURL;
     if (cached?.hash) options.hash ??= cached.hash;
 
+    const hasCustomAR = typeof options.approachRate === 'number';
+    const hasCustomOD = typeof options.overallDifficulty === 'number';
+    const hasCustomCS = typeof options.circleSize === 'number';
+    const hasCustomRate = typeof options.clockRate === 'number';
+
+    if (hasCustomAR || hasCustomOD || hasCustomCS || hasCustomRate) {
+      return await this.createBeatmap(options, originalInfo);
+    }
+
     if (!cached || options.recalculate) {
       return await this.createAndSaveBeatmap(options, originalInfo);
     }
@@ -134,8 +143,44 @@ export class BeatmapService {
    * @param originalInfo Beatmap information or null.
    * @returns Formatted beatmap response.
    */
+  async createBeatmap(options: BeatmapOptionsDto, originalInfo: IBeatmapInfo | null): Promise<IBeatmapResponse> {
+    const calculated = await this.calculateBeatmap(options, originalInfo);
+
+    for (const performance of calculated.performance) {
+      if (performance.totalPerformance !== null) continue;
+
+      throw new InternalServerErrorException('Failed to calculate performance!');
+    }
+
+    const strains = {
+      beatmapsetId: calculated.beatmapInfo.beatmapsetId,
+      skills: calculated.skills,
+    };
+
+    const rulesetId = calculated.beatmapInfo.rulesetId;
+
+    const graphFileName = await this.visualizerService
+      .generateStrainChart(strains, rulesetId);
+
+    return this.beatmapRepository.createOne(calculated, graphFileName, options.fileURL);
+  }
+
+  /**
+   * Calculates beatmap and draws beatmap strain graph.
+   * Result will be saved to database after all calculations.
+   * Calculated data will be transformed to beatmap response.
+   * @param options Beatmap options.
+   * @param originalInfo Beatmap information or null.
+   * @returns Formatted beatmap response.
+   */
   async createAndSaveBeatmap(options: BeatmapOptionsDto, originalInfo: IBeatmapInfo | null): Promise<IBeatmapResponse> {
-    const calculated = await this.createBeatmap(options, originalInfo);
+    const calculated = await this.calculateBeatmap(options, originalInfo);
+
+    for (const performance of calculated.performance) {
+      if (performance.totalPerformance !== null) continue;
+
+      throw new InternalServerErrorException('Failed to calculate performance!');
+    }
 
     const strains = {
       beatmapsetId: calculated.beatmapInfo.beatmapsetId,
@@ -156,7 +201,7 @@ export class BeatmapService {
    * @param originalInfo Beatmap information or null.
    * @returns Calculated beatmap with beatmap info from the API.
    */
-  async createBeatmap(options: BeatmapOptionsDto, originalInfo: IBeatmapInfo | null): Promise<ICalculatedBeatmap> {
+  async calculateBeatmap(options: BeatmapOptionsDto, originalInfo: IBeatmapInfo | null): Promise<ICalculatedBeatmap> {
     const calculationOptions = {
       ...options,
       savePath: process.env.CACHE_PATH,

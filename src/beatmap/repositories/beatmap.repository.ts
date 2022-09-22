@@ -72,6 +72,54 @@ export class BeatmapRepository {
     return deleted ? this.transformData(deleted) : null;
   }
 
+  async createOne(calculated: ICalculatedBeatmap, graphFileName: string | null, fileURL?: string): Promise<IBeatmapResponse> {
+    const { beatmapInfo, attributes, difficulty, performance } = calculated;
+
+    const createdBeatmapGeneral = await this.beatmapGeneralRepository.createOne(
+      beatmapInfo,
+      attributes,
+    );
+
+    const createdBeatmapMetadata = await this.beatmapMetadataRepository.createOne(
+      beatmapInfo,
+    );
+
+    const createdDifficulty = await this.difficultyRepository.createOne(
+      beatmapInfo.id,
+      beatmapInfo.mods,
+      beatmapInfo.rulesetId,
+      beatmapInfo.md5,
+      difficulty,
+    );
+
+    this.removeProps(createdBeatmapGeneral);
+    this.removeProps(createdBeatmapMetadata);
+    this.removeProps(createdDifficulty);
+
+    const createdPerformance = performance.map((pp) => {
+      return this.performanceRepository.createOne(pp, beatmapInfo.rulesetId);
+    });
+
+    const data = {
+      id: beatmapInfo.id,
+      rulesetId: beatmapInfo.rulesetId,
+      isConvert: beatmapInfo.isConvert,
+      mods: beatmapInfo.mods,
+      hash: beatmapInfo.md5,
+      graphFile: graphFileName,
+      performance: createdPerformance,
+      fileURL,
+    };
+
+    const created = new this.beatmapModel(data).toObject();
+
+    created.general = createdBeatmapGeneral;
+    created.metadata = createdBeatmapMetadata;
+    created.difficulty = createdDifficulty;
+
+    return this.transformData(created);
+  }
+
   async saveOne(calculated: ICalculatedBeatmap, graphFileName: string | null, fileURL?: string): Promise<IBeatmapResponse> {
     const { beatmapInfo, attributes, difficulty, performance } = calculated;
 
@@ -124,19 +172,22 @@ export class BeatmapRepository {
   }
 
   private transformData(obj: Beatmap): LeanDocument<Beatmap> {
-    const removeProps = (o: any) => {
-      delete o._id; delete o.__v; delete o.__t;
-    };
+    this.removeProps(obj);
 
-    removeProps(obj);
-    removeProps(obj.general);
-    removeProps(obj.metadata);
-    removeProps(obj.difficulty);
+    if (obj.general) this.removeProps(obj.general);
+    if (obj.metadata) this.removeProps(obj.metadata);
+    if (obj.difficulty) this.removeProps(obj.difficulty);
 
     if (obj.performance) {
-      obj.performance.forEach(removeProps);
+      obj.performance.forEach(this.removeProps);
     }
 
     return obj;
+  }
+
+  private removeProps(obj: any): any {
+    delete obj._id;
+    delete obj.__v;
+    delete obj.__t;
   }
 }

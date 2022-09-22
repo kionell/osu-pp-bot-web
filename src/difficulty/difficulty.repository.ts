@@ -41,6 +41,28 @@ export class DifficultyRepository {
       .exec();
   }
 
+  async createOne(
+    beatmapId: number,
+    mods: string | number,
+    rulesetId: number,
+    hash: string,
+    difficulty: DifficultyAttributes,
+  ): Promise<Difficulty> {
+    const targetMods = toDifficultyMods(mods, rulesetId);
+
+    const data = {
+      ...difficulty,
+      mods: targetMods.toString(),
+      beatmapId,
+      rulesetId,
+      hash,
+    };
+
+    const Model = this.getModel(rulesetId);
+
+    return await Model.create(data).then((doc) => doc.toObject());
+  }
+
   async saveOne(
     beatmapId: number,
     mods: string | number,

@@ -50,6 +50,26 @@ export class ScoreOptionsDto {
   mods?: string | number;
 
   /**
+   * Custom approach rate for the target beatmap.
+   */
+  approachRate?: number;
+
+  /**
+   * Custom overall difficulty for the target beatmap.
+   */
+  overallDifficulty?: number;
+
+  /**
+   * Custom circle size for the target beatmap.
+   */
+  circleSize?: number;
+
+  /**
+   * Custom clock rate for the target beatmap.
+   */
+  clockRate?: number;
+
+  /**
    * Target score misses.
    */
   countMiss?: number;

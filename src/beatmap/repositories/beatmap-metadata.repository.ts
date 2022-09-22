@@ -11,6 +11,16 @@ export class BeatmapMetadataRepository {
     private beatmapMetadataModel: Model<BeatmapMetadata>,
   ) {}
 
+  async createOne(beatmapInfo: IJsonableBeatmapInfo): Promise<BeatmapMetadata> {
+    const data: Partial<BeatmapMetadata> = {
+      ...beatmapInfo,
+      beatmapId: beatmapInfo.id,
+      hash: beatmapInfo.md5,
+    };
+
+    return new this.beatmapMetadataModel(data).toObject();
+  }
+
   async saveOne(beatmapInfo: IJsonableBeatmapInfo): Promise<BeatmapMetadata> {
     const filter: Partial<BeatmapMetadata> = {
       beatmapId: beatmapInfo.id,
