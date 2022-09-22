@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@kionell/osu-api": "^1.0.2",
-    "@kionell/osu-pp-calculator": "^1.0.3",
+    "@kionell/osu-pp-calculator": "^1.1.0",
     "@nestjs/common": "^8.1.1",
     "@nestjs/config": "^2.0.1",
     "@nestjs/core": "^8.1.1",
@@ -37,7 +37,7 @@
     "hbs": "^4.2.0",
     "moment": "^2.29.3",
     "mongoose": "^6.3.4",
-    "osu-classes": "^1.0.2",
+    "osu-classes": "^1.2.0",
     "osu-downloader": "^0.6.3",
     "piscina": "^3.2.0",
     "skia-canvas": "^0.9.30",
