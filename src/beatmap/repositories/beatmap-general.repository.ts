@@ -27,6 +27,7 @@ export class BeatmapGeneralRepository {
       maxFruits: attributes.maxFruits,
       maxDroplets: attributes.maxDroplets,
       maxTinyDroplets: attributes.maxTinyDroplets,
+      clockRate: attributes.clockRate,
       mods: targetMods.toString(),
       beatmapId: id,
       hash: md5,
@@ -57,6 +58,7 @@ export class BeatmapGeneralRepository {
       maxFruits: attributes.maxFruits,
       maxDroplets: attributes.maxDroplets,
       maxTinyDroplets: attributes.maxTinyDroplets,
+      clockRate: attributes.clockRate,
     };
 
     const Model = this.getModel(rulesetId);

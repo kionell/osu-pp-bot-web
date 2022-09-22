@@ -40,6 +40,9 @@ export class BeatmapGeneral implements IBeatmapGeneral {
   @Prop({ default: 0 })
     drainRate: number;
 
+  @Prop({ default: 1 })
+    clockRate: number;
+
   @Prop({ default: 0 })
     hittable: number;
 
