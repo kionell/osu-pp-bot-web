@@ -41,6 +41,7 @@ export class ScoreService {
       overallDifficulty: options.overallDifficulty,
       circleSize: options.circleSize,
       clockRate: options.clockRate,
+      bpm: options.bpm,
     }, true);
 
     const attributes = this.conversionUtils.createBeatmapAttributes(beatmap);

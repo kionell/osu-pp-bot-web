@@ -40,6 +40,11 @@ export class BeatmapOptionsDto {
   clockRate?: number;
 
   /**
+   * Custom BPM for the target beatmap.
+   */
+  bpm?: number;
+
+  /**
    * Server name (bancho, gatari...).
    */
   server?: keyof typeof Server;
