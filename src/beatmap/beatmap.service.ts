@@ -112,8 +112,9 @@ export class BeatmapService {
     const hasCustomOD = typeof options.overallDifficulty === 'number';
     const hasCustomCS = typeof options.circleSize === 'number';
     const hasCustomRate = typeof options.clockRate === 'number';
+    const hasCustomBPM = typeof options.bpm === 'number';
 
-    if (hasCustomAR || hasCustomOD || hasCustomCS || hasCustomRate) {
+    if (hasCustomAR || hasCustomOD || hasCustomCS || hasCustomRate || hasCustomBPM) {
       return await this.createBeatmap(options, originalInfo);
     }
 
