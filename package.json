@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@kionell/osu-api": "^1.0.2",
-    "@kionell/osu-pp-calculator": "^1.2.1",
+    "@kionell/osu-pp-calculator": "^1.3.0",
     "@nestjs/common": "^8.1.1",
     "@nestjs/config": "^2.0.1",
     "@nestjs/core": "^8.1.1",
