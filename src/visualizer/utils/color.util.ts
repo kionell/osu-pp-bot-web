@@ -38,18 +38,19 @@ export class ColorUtils {
     ], // Purple
   ];
 
+  // "Speed is such a red skill tho" (c) Ilmeria
   private readonly OSU_COLORS = [
-    this.ALL_COLORS[0], // Red
-    this.ALL_COLORS[3], // Green
-    this.ALL_COLORS[4], // Light Blue
-    this.ALL_COLORS[6], // Purple
+    this.ALL_COLORS[4], // Light Blue - Aim
+    this.ALL_COLORS[3], // Green      - Aim (Sliders)
+    this.ALL_COLORS[0], // Red        - Speed
+    this.ALL_COLORS[6], // Purple     - Flashlight
   ];
 
   private readonly TAIKO_COLORS = [
-    this.ALL_COLORS[0], // Red
-    this.ALL_COLORS[3], // Green
-    this.ALL_COLORS[4], // Light Blue
-    this.ALL_COLORS[6], // Purple
+    this.ALL_COLORS[4], // Light Blue - Colour
+    this.ALL_COLORS[3], // Green      - Rhythm
+    this.ALL_COLORS[0], // Red        - Stamina (Left)
+    this.ALL_COLORS[2], // Yellow     - Stamina (Right)
   ];
 
   private readonly CATCH_COLORS = [
