@@ -47,10 +47,7 @@ export class ColorUtils {
   ];
 
   private readonly TAIKO_COLORS = [
-    this.ALL_COLORS[4], // Light Blue - Colour
-    this.ALL_COLORS[3], // Green      - Rhythm
-    this.ALL_COLORS[0], // Red        - Stamina (Left)
-    this.ALL_COLORS[2], // Yellow     - Stamina (Right)
+    this.ALL_COLORS[1], // Orange - Peaks
   ];
 
   private readonly CATCH_COLORS = [
