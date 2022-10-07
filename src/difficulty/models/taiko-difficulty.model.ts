@@ -5,16 +5,16 @@ import { Difficulty } from './difficulty.model';
 @Schema()
 export class TaikoDifficulty extends Difficulty {
   @Prop({ default: 0 })
-    staminaStrain: number;
+    staminaDifficulty: number;
 
   @Prop({ default: 0 })
-    rhythmStrain: number;
+    rhythmDifficulty: number;
 
   @Prop({ default: 0 })
-    colourStrain: number;
+    colourDifficulty: number;
 
   @Prop({ default: 0 })
-    approachRate: number;
+    peakDifficulty: number;
 
   @Prop({ default: 0 })
     greatHitWindow: number;

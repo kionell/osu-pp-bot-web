@@ -5,13 +5,16 @@ import { Difficulty } from './difficulty.model';
 @Schema()
 export class OsuDifficulty extends Difficulty {
   @Prop({ default: 0 })
-    aimStrain: number;
+    aimDifficulty: number;
 
   @Prop({ default: 0 })
-    speedStrain: number;
+    speedDifficulty: number;
 
   @Prop({ default: 0 })
-    flashlightRating: number;
+    speedNoteCount: number;
+
+  @Prop({ default: 0 })
+    flashlightDifficulty: number;
 
   @Prop({ default: 0 })
     sliderFactor: number;

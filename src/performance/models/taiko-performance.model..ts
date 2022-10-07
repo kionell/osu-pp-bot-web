@@ -5,10 +5,13 @@ import { Performance } from './performance.model';
 @Schema()
 export class TaikoPerformance extends Performance {
   @Prop({ default: 0 })
-    strainPerformance: number;
+    difficultyPerformance: number;
 
   @Prop({ default: 0 })
     accuracyPerformance: number;
+
+  @Prop({ default: 0 })
+    effectiveMissCount: number;
 }
 
 export const TaikoPerformanceSchema = SchemaFactory.createForClass(TaikoPerformance);
