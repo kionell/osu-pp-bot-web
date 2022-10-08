@@ -47,15 +47,17 @@ export class ColorUtils {
   ];
 
   private readonly TAIKO_COLORS = [
-    this.ALL_COLORS[1], // Orange - Peaks
+    this.ALL_COLORS[4], // Light Blue - Rhythm
+    this.ALL_COLORS[2], // Purple     - Colour
+    this.ALL_COLORS[0], // Red        - Stamina
   ];
 
   private readonly CATCH_COLORS = [
-    this.ALL_COLORS[4], // Light Blue
+    this.ALL_COLORS[4], // Light Blue - Movement
   ];
 
   private readonly MANIA_COLORS = [
-    this.ALL_COLORS[6], // Purple
+    this.ALL_COLORS[6], // Purple     - Strain
   ];
 
   private readonly REPLAY_COLORS = [
