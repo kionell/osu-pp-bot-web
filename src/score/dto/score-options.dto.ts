@@ -90,6 +90,16 @@ export class ScoreOptionsDto {
   count100?: number;
 
   /**
+   * Target score katu hits.
+   */
+  countKatu?: number;
+
+  /**
+   * Target score geki hits.
+   */
+  countGeki?: number;
+
+  /**
    * Target score accuracy.
    */
   accuracy?: number;
