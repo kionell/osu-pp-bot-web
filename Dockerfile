@@ -13,7 +13,7 @@ COPY . .
 
 EXPOSE 3000
 
-ENV NODE_PATH = ./build
+ENV NODE_PATH = ./dist
 
 RUN npm run build
 
