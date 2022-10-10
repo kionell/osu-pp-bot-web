@@ -10,7 +10,6 @@
 !LICENSE
 !package-lock.json
 !package.json
-!Procfile
 !Dockerfile
 !README.md
 !rollup.config.js
