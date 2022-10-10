@@ -90,6 +90,11 @@ export class ScoreOptionsDto {
   count100?: number;
 
   /**
+   * Target score 300's.
+   */
+  count300?: number;
+
+  /**
    * Target score katu hits.
    */
   countKatu?: number;
