@@ -5,13 +5,7 @@ import { Performance } from './performance.model';
 @Schema()
 export class ManiaPerformance extends Performance {
   @Prop({ default: 0 })
-    strainPerformance: number;
-
-  @Prop({ default: 0 })
-    accuracyPerformance: number;
-
-  @Prop({ default: 0 })
-    scaledScore: number;
+    difficultyPerformance: number;
 }
 
 export const ManiaPerformanceSchema = SchemaFactory.createForClass(ManiaPerformance);
