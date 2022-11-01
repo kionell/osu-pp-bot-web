@@ -16,7 +16,7 @@ export async function getBackgroundImagePlugin(w: number, h: number, imageURL: s
   return new Promise((res) => {
     image.onload = async () => {
       ctx.filter = 'blur(2px) brightness(35%) contrast(108%) saturate(110%)';
-      ctx.drawImage(image, -5, -5, w + 5, h + 5);
+      ctx.drawImage(image, -5, -5, w + 10, h + 10);
 
       // Super weird stuff, but it is a way to create filtered images.
       const buffer = await canvas.toBuffer('png');
