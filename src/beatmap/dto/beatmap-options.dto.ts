@@ -25,14 +25,32 @@ export class BeatmapOptionsDto {
   approachRate?: number;
 
   /**
+   * Prevents scaling of approach rate from difficulty adjusting mods.
+   * @default false
+   */
+  lockApproachRate?: boolean;
+
+  /**
    * Custom overall difficulty for the target beatmap.
    */
   overallDifficulty?: number;
 
   /**
+   * Prevents scaling of overall difficulty from difficulty adjusting mods.
+   * @default false
+   */
+  lockOverallDifficulty?: boolean;
+
+  /**
    * Custom circle size for the target beatmap.
    */
   circleSize?: number;
+
+  /**
+   * Prevents scaling of circle size from difficulty adjusting mods.
+   * @default false
+   */
+  lockCircleSize?: boolean;
 
   /**
    * Custom clock rate for the target beatmap.
@@ -43,6 +61,13 @@ export class BeatmapOptionsDto {
    * Custom BPM for the target beatmap.
    */
   bpm?: number;
+
+  /**
+   * Total hits for gradual beatmap difficulty calculation.
+   * If it differs from the hit object count of 
+   * a full beatmap then it will force difficulty calculation.
+   */
+  totalHits?: number;
 
   /**
    * Server name (bancho, gatari...).
@@ -73,11 +98,6 @@ export class BeatmapOptionsDto {
    * Accuracy list for beatmap performance calculation.
    */
   accuracy?: number[];
-
-  /**
-   * Total score list for osu!mania beatmap performance calculation.
-   */
-  totalScores?: number[];
 
   /**
    * Should beatmap be recalculated or not?
