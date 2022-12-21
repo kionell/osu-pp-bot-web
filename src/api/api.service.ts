@@ -26,8 +26,8 @@ export class ApiService implements OnModuleInit {
    */
   onModuleInit(): void {
     APIFactory.addCredentials('Bancho',
-      process.env.OSU_CLIENT_ID,
-      process.env.OSU_CLIENT_SECRET,
+      process.env.OSU_CLIENT_ID as string,
+      process.env.OSU_CLIENT_SECRET as string,
     );
   }
 
