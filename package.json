@@ -21,7 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@kionell/osu-api": "^1.3.1",
+    "@kionell/osu-api": "^1.3.2",
     "@kionell/osu-pp-calculator": "^3.2.4",
     "@nestjs/common": "^8.1.1",
     "@nestjs/config": "^2.0.1",
