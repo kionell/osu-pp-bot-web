@@ -47,24 +47,31 @@ export function formatNumber(value: number): string {
  * Reduces ammount of ticks that will be drawn on the chart.
  * @param ticks Ticks to be decimated.
  * @param maxTicks Max possible ticks on the chart.
+ * @param hideFirstLast Should first and last ticks be hidden?
  * @returns Decimated ticks.
  */
-export function decimateTicks(ticks: Tick[], maxTicks = 5): Tick[] {
-  if (ticks.length <= maxTicks) {
-    return ticks;
-  }
-
+export function decimateTicks(ticks: Tick[], maxTicks = 5, hideFirstLast = true): Tick[] {
   // This number is used to display a tick every N ticks.
   const density = Math.ceil(ticks.length / maxTicks);
 
   if (isNaN(density)) return ticks;
 
   return ticks.filter((tick, index) => {
-    const firstOrLast = index === 0 || index === ticks.length - 1;
-    const closeToEnd = (ticks.length - index) / density < 0.1;
+    const firstTick = index === 0;
 
-    // Always hide first or last ticks and ticks that are close to end.
-    if (firstOrLast || closeToEnd) return;
+    // Hide first tick if required
+    if (firstTick && hideFirstLast) return;
+
+    const lastTick = index === ticks.length - 1;
+
+    // Hide last tick if required and if there are more than 2 ticks.
+    if (lastTick && ticks.length > 2 && hideFirstLast) return;
+
+    const closeToStart = index / density < 0.1 && !firstTick;
+    const closeToEnd = (ticks.length - index) / density < 0.1 && !lastTick;
+
+    // Always hide ticks that are close to the start or end.
+    if (closeToStart || closeToEnd) return;
 
     if (index % density === 0) return tick;
   });
