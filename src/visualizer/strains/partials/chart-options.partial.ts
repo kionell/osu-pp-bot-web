@@ -8,11 +8,9 @@ interface InputChartOptions {
   maxValue?: number;
 }
 
-interface InputScaleOptions {
-  isDarkPicture: boolean;
-  fontWidth: number;
+interface InputScaleOptions extends InputChartOptions {
+  fontSize: number;
   strokeWidth: number;
-  maxValue?: number;
 }
 
 export function getStrainChartOptions(chartOptions: InputChartOptions): any {
@@ -26,41 +24,44 @@ export function getStrainChartOptions(chartOptions: InputChartOptions): any {
 function getStrainChartScales(chartOptions: InputChartOptions) {
   return {
     x: getStrainChartScalesX({
-      fontWidth: chartOptions.maxWidth / 46,
-      strokeWidth: chartOptions.maxWidth / 1104,
-      isDarkPicture: chartOptions.isDarkPicture,
+      ...chartOptions,
+      fontSize: 12,
+      strokeWidth: 0.5,
     }),
     y: getStrainChartScalesY({
-      fontWidth: chartOptions.maxHeight / 12.5,
-      strokeWidth: chartOptions.maxHeight / 250,
-      isDarkPicture: chartOptions.isDarkPicture,
-      maxValue: chartOptions.maxValue,
+      ...chartOptions,
+      fontSize: 12,
+      strokeWidth: 0.5,
     }),
   };
 }
 
 function getStrainChartScalesX(scaleOptions: InputScaleOptions) {
+  const { fontSize, maxWidth, strokeWidth, isDarkPicture } = scaleOptions;
+
   return {
     grid: {
       drawOnChartArea: true,
-      color: scaleOptions.isDarkPicture ? 'white' : 'black',
-      lineWidth: 1,
+      color: isDarkPicture
+        ? 'rgba(255, 255, 255, 0.7)'
+        : 'rgba(0, 0, 0, 0.7)',
+      lineWidth: 0.5,
 
       drawBorder: true,
-      borderColor: scaleOptions.isDarkPicture ? 'white' : 'black',
-      borderWidth: 1,
+      borderColor: isDarkPicture ? 'white' : 'black',
+      borderWidth: 1.25,
 
       drawTicks: true,
       tickLength: 4,
     },
     ticks: {
       font: {
-        size: scaleOptions.fontWidth,
+        size: maxWidth / (maxWidth / fontSize),
         weight: 'bold',
       },
-      color: scaleOptions.isDarkPicture ? 'white' : 'black',
+      color: isDarkPicture ? 'white' : 'black',
       textStrokeColor: 'black',
-      textStrokeWidth: scaleOptions.strokeWidth,
+      textStrokeWidth: maxWidth / (maxWidth / strokeWidth),
       maxRotation: 0,
     },
     afterBuildTicks: (axis: Scale) => {
@@ -70,34 +71,42 @@ function getStrainChartScalesX(scaleOptions: InputScaleOptions) {
 }
 
 function getStrainChartScalesY(scaleOptions: InputScaleOptions) {
+  const {
+    fontSize,
+    maxHeight,
+    isDarkPicture,
+    maxValue,
+    strokeWidth,
+  } = scaleOptions;
+
   return {
     stacked: false,
     beginAtZero: true,
     title: false,
-    max: scaleOptions.maxValue,
+    max: maxValue,
     grid: {
       drawOnChartArea: true,
-      color: 'rgba(0, 0, 0, 0.1)',
-      lineWidth: 1,
+      color: 'rgba(0, 0, 0, 0.2)',
+      lineWidth: 0.5,
 
       drawBorder: true,
-      borderColor: scaleOptions.isDarkPicture ? 'white' : 'black',
-      borderWidth: 1,
+      borderColor: isDarkPicture ? 'white' : 'black',
+      borderWidth: 1.25,
 
       drawTicks: true,
       tickColor: 'transparent',
-      tickLength: 2,
+      tickLength: 1,
     },
     ticks: {
       font: {
-        size: scaleOptions.fontWidth,
+        size: maxHeight / (maxHeight / fontSize),
         weight: 'bold',
       },
-      color: scaleOptions.isDarkPicture ? 'white' : 'black',
+      color: isDarkPicture ? 'white' : 'black',
       textStrokeColor: 'black',
-      textStrokeWidth: scaleOptions.strokeWidth,
+      textStrokeWidth: maxHeight / (maxHeight / strokeWidth),
       maxRotation: 0,
-      stepSize: scaleOptions.maxValue as number / 4,
+      stepSize: maxValue as number / 4,
       callback: formatNumber,
     },
   };
@@ -112,7 +121,7 @@ function getStrainChartPlugins(chartOptions: InputChartOptions) {
       boxWidth: 6,
       boxHeight: 0,
       font: {
-        size: chartOptions.maxWidth / 40,
+        size: chartOptions.maxWidth / (chartOptions.maxWidth / 13.5),
         weight: 'bold',
       },
     },
