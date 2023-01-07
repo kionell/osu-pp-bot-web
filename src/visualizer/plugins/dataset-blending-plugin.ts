@@ -14,6 +14,6 @@ export class DatasetBlendingPlugin {
   }
 
   afterDatasetsDraw(chart: Chart): void {
-    chart.ctx.globalCompositeOperation = 'source-over';
+    chart.ctx.globalCompositeOperation = 'destination-over';
   }
 }
