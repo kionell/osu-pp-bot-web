@@ -55,7 +55,7 @@ export function decimateTicks(ticks: Tick[], maxTicks = 5): Tick[] {
   }
 
   // This number is used to display a tick every N ticks.
-  const density = Math.trunc(ticks.length / maxTicks);
+  const density = Math.ceil(ticks.length / maxTicks);
 
   if (isNaN(density)) return ticks;
 
