@@ -25,6 +25,24 @@ export function msToTime(ms: number): string {
   return values.join(':');
 }
 
+export function formatNumber(value: number): string {
+  const error = 0.000001;
+
+  if (value >= 1e9 - error) {
+    return value.toExponential(1);
+  }
+
+  if (value >= 1e6 - error) {
+    return `${(value / 1e6).toFixed(1)}m`;
+  }
+
+  if (value >= 1e4 - error) {
+    return `${(value / 1e3).toFixed(1)}k`;
+  }
+
+  return value.toFixed(0);
+}
+
 /**
  * Reduces ammount of ticks that will be drawn on the chart.
  * @param ticks Ticks to be decimated.
