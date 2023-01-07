@@ -41,10 +41,6 @@ export class StrainChartService {
    * @returns Buffer with image data.
    */
   async generateImage(skills: IBeatmapSkill[], backgroundURL: string | null, rulesetId?: GameMode): Promise<Buffer> {
-    const maxPoints = skills.reduce((max, skill) => {
-      return Math.max(max, skill.strainPeaks.length);
-    }, 0);
-
     const decimated = skills.map((skill) => {
       return {
         label: skill.title,
@@ -68,7 +64,7 @@ export class StrainChartService {
       }
     }
 
-    const maxHeight = decimated.reduce((max, skill) => {
+    const maxStrainValue = decimated.reduce((max, skill) => {
       for (const point of skill.data) {
         max = Math.max(max, point.y);
       }
@@ -84,12 +80,12 @@ export class StrainChartService {
       return msToTime(d.x);
     });
 
-    const options = getStrainChartOptions(
-      StrainChartService.GRAPH_WIDTH,
-      maxHeight,
-      maxPoints,
-      true,
-    );
+    const options = getStrainChartOptions({
+      maxWidth: StrainChartService.GRAPH_WIDTH,
+      maxHeight: StrainChartService.GRAPH_HEIGHT,
+      maxValue: maxStrainValue,
+      isDarkPicture: true,
+    });
 
     return await StrainChartService.chart.renderToBuffer({
       type: 'line',

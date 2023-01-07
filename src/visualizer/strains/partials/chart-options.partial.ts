@@ -1,30 +1,53 @@
 import { Scale } from 'chart.js';
-import { decimateTicks } from '../../utils/chart.util';
+import { decimateTicks, formatNumber } from '../../utils/chart.util';
 
-export function getStrainChartOptions(w: number, h: number, points: number, isDarkPicture: boolean): any {
+interface InputChartOptions {
+  isDarkPicture: boolean;
+  maxWidth: number;
+  maxHeight: number;
+  maxValue?: number;
+}
+
+interface InputScaleOptions {
+  isDarkPicture: boolean;
+  fontWidth: number;
+  strokeWidth: number;
+  maxValue?: number;
+}
+
+export function getStrainChartOptions(chartOptions: InputChartOptions): any {
   return {
     ...getBaseChartOptions(),
-    scales: getStrainChartScales(w, h, points, isDarkPicture),
-    plugins: getStrainChartPlugins(w, isDarkPicture),
+    scales: getStrainChartScales(chartOptions),
+    plugins: getStrainChartPlugins(chartOptions),
   };
 }
 
-function getStrainChartScales(w: number, h: number, points: number, isDarkPicture: boolean) {
+function getStrainChartScales(chartOptions: InputChartOptions) {
   return {
-    x: getStrainChartScalesX(w, points, isDarkPicture),
-    y: getStrainChartScalesY(h),
+    x: getStrainChartScalesX({
+      fontWidth: chartOptions.maxWidth / 46,
+      strokeWidth: chartOptions.maxWidth / 1104,
+      isDarkPicture: chartOptions.isDarkPicture,
+    }),
+    y: getStrainChartScalesY({
+      fontWidth: chartOptions.maxHeight / 12.5,
+      strokeWidth: chartOptions.maxHeight / 250,
+      isDarkPicture: chartOptions.isDarkPicture,
+      maxValue: chartOptions.maxValue,
+    }),
   };
 }
 
-function getStrainChartScalesX(w: number, points: number, isDarkPicture: boolean) {
+function getStrainChartScalesX(scaleOptions: InputScaleOptions) {
   return {
     grid: {
       drawOnChartArea: true,
-      color: isDarkPicture ? 'white' : 'black',
+      color: scaleOptions.isDarkPicture ? 'white' : 'black',
       lineWidth: 1,
 
       drawBorder: true,
-      borderColor: isDarkPicture ? 'white' : 'black',
+      borderColor: scaleOptions.isDarkPicture ? 'white' : 'black',
       borderWidth: 1,
 
       drawTicks: true,
@@ -32,12 +55,12 @@ function getStrainChartScalesX(w: number, points: number, isDarkPicture: boolean
     },
     ticks: {
       font: {
-        size: w / 45,
+        size: scaleOptions.fontWidth,
         weight: 'bold',
       },
-      color: isDarkPicture ? 'white' : 'black',
+      color: scaleOptions.isDarkPicture ? 'white' : 'black',
       textStrokeColor: 'black',
-      textStrokeWidth: w / 1125,
+      textStrokeWidth: scaleOptions.strokeWidth,
       maxRotation: 0,
     },
     afterBuildTicks: (axis: Scale) => {
@@ -46,33 +69,50 @@ function getStrainChartScalesX(w: number, points: number, isDarkPicture: boolean
   };
 }
 
-function getStrainChartScalesY(h: number) {
+function getStrainChartScalesY(scaleOptions: InputScaleOptions) {
   return {
     stacked: false,
     beginAtZero: true,
     title: false,
-    max: h,
+    max: scaleOptions.maxValue,
     grid: {
+      drawOnChartArea: true,
       color: 'rgba(0, 0, 0, 0.1)',
-      drawTicks: false,
-      display: true,
+      lineWidth: 1,
+
+      drawBorder: true,
+      borderColor: scaleOptions.isDarkPicture ? 'white' : 'black',
+      borderWidth: 1,
+
+      drawTicks: true,
+      tickColor: 'transparent',
+      tickLength: 2,
     },
     ticks: {
-      display: false,
+      font: {
+        size: scaleOptions.fontWidth,
+        weight: 'bold',
+      },
+      color: scaleOptions.isDarkPicture ? 'white' : 'black',
+      textStrokeColor: 'black',
+      textStrokeWidth: scaleOptions.strokeWidth,
+      maxRotation: 0,
+      stepSize: scaleOptions.maxValue as number / 4,
+      callback: formatNumber,
     },
   };
 }
 
-function getStrainChartPlugins(w: number, isDarkPicture: boolean) {
+function getStrainChartPlugins(chartOptions: InputChartOptions) {
   const legend = {
     position: 'top',
     align: 'end',
     labels: {
-      color: isDarkPicture ? 'white' : 'black',
+      color: chartOptions.isDarkPicture ? 'white' : 'black',
       boxWidth: 6,
       boxHeight: 0,
       font: {
-        size: w / 40,
+        size: chartOptions.maxWidth / 40,
         weight: 'bold',
       },
     },
