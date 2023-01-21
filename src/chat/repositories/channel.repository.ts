@@ -21,7 +21,8 @@ export class ChannelRepository {
 
     const data: Partial<Channel> = {
       id: channelDto.id.toString(),
-      beatmapId: channelDto.beatmapId,
+      beatmapId: channelDto.beatmapId as number,
+      beatmapMD5: channelDto.beatmapMD5 as string,
     };
 
     if (channelDto.server) {

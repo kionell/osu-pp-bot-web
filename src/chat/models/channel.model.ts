@@ -8,8 +8,11 @@ export class Channel {
   @Prop({ required: true })
     id: string;
 
-  @Prop({ default: 0 })
+  @Prop({ default: null })
     beatmapId: number;
+
+  @Prop({ default: null })
+    beatmapMD5: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Server', default: null })
     server: Server | null;

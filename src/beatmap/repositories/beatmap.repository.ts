@@ -50,6 +50,10 @@ export class BeatmapRepository {
     return filter;
   }
 
+  async findOneByMD5(hash: string, compact = false): Promise<IBeatmapResponse | null> {
+    return this.findOne({ hash }, compact);
+  }
+
   async findOne(filter: Partial<Beatmap>, compact = false): Promise<IBeatmapResponse | null> {
     const query = this.beatmapModel
       .findOne(filter)

@@ -13,7 +13,12 @@ export class ChannelDto {
   /**
    * Last saved beatmap ID.
    */
-  beatmapId: number;
+  beatmapId: number | null;
+
+  /**
+   * Last saved beatmap MD5 hash.
+   */
+  beatmapMD5: string | null;
 
   /**
    * Nested server data.

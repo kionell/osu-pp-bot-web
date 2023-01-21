@@ -75,14 +75,26 @@ export class BeatmapService {
    * @returns Beatmap response.
    */
   private async processDefault(options: BeatmapOptionsDto, compact: boolean): Promise<IBeatmapResponse> {
+    // Search original beatmap info in the database.
+    if (options.hash) {
+      const originalCache = await this.beatmapRepository.findOneByMD5(options.hash);
+
+      if (originalCache?.fileURL) options.fileURL ||= originalCache.fileURL;
+      if (originalCache?.hash) options.hash ||= originalCache.hash;
+
+      if (originalCache?.id && !originalCache.fileURL) {
+        options.beatmapId ||= originalCache.id;
+      }
+    }
+
     let originalInfo: IBeatmapInfo | null = null;
 
     // Try to get beatmap ID from API if we have hash or search query.
     if (!options.beatmapId && !options.fileURL && (options.hash || options.search)) {
       originalInfo = await this.apiService.getBeatmap(options.server, options);
 
-      options.beatmapId ||= originalInfo?.id;
-      options.hash ||= originalInfo?.md5;
+      if (originalInfo?.id) options.beatmapId ||= originalInfo.id;
+      if (originalInfo?.md5) options.hash ||= originalInfo.md5;
     }
 
     // This is possible only if we had search query and beatmap wasn't found.
