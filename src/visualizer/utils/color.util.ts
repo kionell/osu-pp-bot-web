@@ -48,7 +48,7 @@ export class ColorUtils {
 
   private readonly TAIKO_COLORS = [
     this.ALL_COLORS[4], // Light Blue - Rhythm
-    this.ALL_COLORS[2], // Purple     - Colour
+    this.ALL_COLORS[2], // Yellow     - Colour
     this.ALL_COLORS[0], // Red        - Stamina
   ];
 
