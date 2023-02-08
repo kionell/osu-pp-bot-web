@@ -35,7 +35,7 @@ export class ColorUtils {
     [
       `rgba(255, 0, 255, ${this.lineOpacity})`,
       `rgba(178, 0, 178, ${this.fillOpacity})`,
-    ], // Purple
+    ], // Magenta
   ];
 
   // "Speed is such a red skill tho" (c) Ilmeria
@@ -43,7 +43,7 @@ export class ColorUtils {
     this.ALL_COLORS[4], // Light Blue - Aim
     this.ALL_COLORS[3], // Green      - Aim (Sliders)
     this.ALL_COLORS[0], // Red        - Speed
-    this.ALL_COLORS[6], // Purple     - Flashlight
+    this.ALL_COLORS[6], // Magenta    - Flashlight
   ];
 
   private readonly TAIKO_COLORS = [
@@ -57,7 +57,7 @@ export class ColorUtils {
   ];
 
   private readonly MANIA_COLORS = [
-    this.ALL_COLORS[6], // Purple     - Strain
+    this.ALL_COLORS[6], // Magenta    - Strain
   ];
 
   private readonly REPLAY_COLORS = [
