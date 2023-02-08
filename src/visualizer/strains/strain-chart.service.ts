@@ -9,6 +9,7 @@ import { msToTime } from '../utils/chart.util';
 import {
   getBackgroundImagePlugin,
   getDatasetBlendingPlugin,
+  getLegendBoxFillPlugin,
 } from '../utils/plugin.util';
 
 @Injectable()
@@ -100,6 +101,7 @@ export class StrainChartService {
           backgroundURL,
         ),
         await getDatasetBlendingPlugin(),
+        await getLegendBoxFillPlugin(),
       ],
       options,
     });

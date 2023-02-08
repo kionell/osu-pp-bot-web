@@ -3,6 +3,7 @@ import { loadImage } from 'canvas';
 import { BackgroundImagePlugin } from '../plugins/background-image.plugin';
 import { DatasetBlendingPlugin } from '../plugins/dataset-blending-plugin';
 import { VerticalGradientPlugin } from '../plugins/vertical-gradient.plugin';
+import { LegendBoxFillPlugin } from '../plugins/legend-box-fill.plugin';
 
 export async function getBackgroundImagePlugin(w: number, h: number, imageURL: string | null): Promise<BackgroundImagePlugin> {
   if (!imageURL) {
@@ -39,4 +40,8 @@ export async function getDatasetBlendingPlugin(): Promise<DatasetBlendingPlugin>
 
 export async function getVerticalGradientPlugin(colors: string[][]): Promise<VerticalGradientPlugin> {
   return new VerticalGradientPlugin(colors);
+}
+
+export async function getLegendBoxFillPlugin(): Promise<LegendBoxFillPlugin> {
+  return new LegendBoxFillPlugin();
 }

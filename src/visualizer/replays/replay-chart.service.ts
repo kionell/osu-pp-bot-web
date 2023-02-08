@@ -9,6 +9,7 @@ import { ColorUtils } from '../utils/color.util';
 import {
   getBackgroundImagePlugin,
   getDatasetBlendingPlugin,
+  getLegendBoxFillPlugin,
   getVerticalGradientPlugin,
 } from '../utils/plugin.util';
 
@@ -71,6 +72,7 @@ export class ReplayChartService {
         ),
         await getDatasetBlendingPlugin(),
         await getVerticalGradientPlugin(colors),
+        await getLegendBoxFillPlugin(),
       ],
       options,
     });
