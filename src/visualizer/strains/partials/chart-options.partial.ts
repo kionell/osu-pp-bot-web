@@ -118,9 +118,9 @@ function getStrainChartPlugins(chartOptions: InputChartOptions) {
     align: 'end',
     labels: {
       color: chartOptions.isDarkPicture ? 'white' : 'black',
-      boxWidth: 7,
+      boxWidth: 9,
       boxHeight: 2,
-      padding: 7,
+      padding: 8,
       font: {
         size: chartOptions.maxWidth / (chartOptions.maxWidth / 13.5),
         weight: 'bold',
