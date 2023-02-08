@@ -69,9 +69,9 @@ function getReplayChartPlugins(w: number, isDarkPicture: boolean) {
     align: 'end',
     labels: {
       color: isDarkPicture ? 'white' : 'black',
-      boxWidth: 7,
+      boxWidth: 9,
       boxHeight: 2,
-      padding: 7,
+      padding: 8,
       font: {
         size: w / 40,
         weight: 'bold',
