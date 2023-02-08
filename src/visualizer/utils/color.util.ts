@@ -62,8 +62,10 @@ export class ColorUtils {
 
   private readonly REPLAY_COLORS = [
     this.ALL_COLORS[3], // Green
+    this.ALL_COLORS[3], // Green
+    this.ALL_COLORS[3], // Green
     this.ALL_COLORS[2], // Yellow
-    this.ALL_COLORS[1], // Orange
+    this.ALL_COLORS[2], // Yellow
     this.ALL_COLORS[0], // Red
   ];
 
